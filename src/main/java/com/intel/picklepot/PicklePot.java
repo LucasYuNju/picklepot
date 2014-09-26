@@ -1,5 +1,6 @@
 package com.intel.picklepot;
 
+import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.storage.DataInput;
 import com.intel.picklepot.storage.DataOutput;
 
@@ -24,14 +25,14 @@ public interface PicklePot<T> {
    * @param obj
    * @return return current object count.
    */
-  public long add(T obj);
+  public long add(T obj) throws PicklePotException;
 
   /**
    * add all objects in the iterator to cache for serialization.
    * @param ite
    * @return return current object count.
    */
-  public long add(Iterator<T> ite);
+  public long add(Iterator<T> ite) throws PicklePotException;
 
   /**
    * deserialize an object from input.
