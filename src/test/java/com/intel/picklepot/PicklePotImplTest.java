@@ -32,7 +32,7 @@ public class PicklePotImplTest {
 
 
 class Pair {
-  private String word;
+  public String word;
   public int count;
 
   public Pair(String word, int count) {

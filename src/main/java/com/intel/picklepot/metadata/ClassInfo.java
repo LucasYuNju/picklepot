@@ -1,9 +1,10 @@
 package com.intel.picklepot.metadata;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClassInfo<T> {
+public class ClassInfo<T> implements Serializable {
   private Class<T> classIns;
   private Map<String, FieldInfo> fieldInfos = new HashMap<String, FieldInfo>();
 
@@ -21,5 +22,9 @@ public class ClassInfo<T> {
 
   public Map<String, FieldInfo> getFieldInfos() {
     return fieldInfos;
+  }
+
+  public Class<T> getClassIns() {
+    return classIns;
   }
 }
