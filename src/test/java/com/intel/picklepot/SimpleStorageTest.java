@@ -38,7 +38,7 @@ public class SimpleStorageTest {
     simpleDataInput.readObjects();
 
     assertEquals(Pair.class, simpleDataInput.getClassInfo().getClassIns());
-    assertArrayEquals(dumbPicklePot.getWordStream().toByteArray(), simpleDataInput.getFieldsByte().get(0));
+    assertEquals("helloworld", new String(simpleDataInput.getFieldsByte().get(0)));
     assertArrayEquals(dumbPicklePot.getCountStream().toByteArray(), simpleDataInput.getFieldsByte().get(1));
 
     file.delete();
