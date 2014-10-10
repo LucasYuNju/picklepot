@@ -7,7 +7,12 @@ import java.util.Iterator;
  * @param <T>
  */
 public interface Decoder<T> {
-
-  public Iterator<T> decode(byte[] bytes);
+    /**
+     * restore compressed bytes to object collection
+     * @param bytes compressed bytes
+     * @param className class name of target object
+     * @return iterator of object collection
+     */
+    public Iterator<T> decode(byte[] bytes, int numObject, String className);
 
 }
