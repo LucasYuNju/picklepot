@@ -9,7 +9,7 @@ import java.util.Iterator;
 public interface Decoder<T> {
     /**
      * restore compressed bytes to object collection
-     * @param bytes     compressed bytes
+     * @param bytes compressed bytes
      * @param className class name of target object
      * @return iterator of object collection
      */
