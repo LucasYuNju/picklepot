@@ -27,8 +27,7 @@ public class RunLengthEncoder implements Encoder{
             System.err.println("unsupported type:" + obj.getClass());
             return;
         }
-        if(os == null)
-            os = new ByteArrayOutputStream();
+        os = new ByteArrayOutputStream();
         RunLengthIntegerWriter writer = new RunLengthIntegerWriter(os, true, 4, true);
         try {
             writer.write((Integer)obj);
