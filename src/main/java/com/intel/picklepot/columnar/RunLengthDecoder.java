@@ -22,7 +22,6 @@ public class RunLengthDecoder implements Decoder{
             e.printStackTrace();
         }
         List<Integer> list = new LinkedList<Integer>();
-
         for(int i=0; i<numObject; i++) {
             try {
                 list.add((int)reader.next());
