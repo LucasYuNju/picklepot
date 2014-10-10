@@ -21,19 +21,16 @@ public class LZ4Encoder implements Encoder{
     @Override
     public void encode(Iterator values) {
         byte[] input = Bytes.toBytes(values);
-
         LZ4Compressor compressor = LZ4Factory.fastestInstance().fastCompressor();
         byte[] compressed = new byte[compressor.maxCompressedLength(input.length)];
         int compressedSize = compressor.compress(input, 0, input.length, compressed, 0, compressed.length);
-        if(os == null)
-            os = new ByteArrayOutputStream();
+        os = new ByteArrayOutputStream();
         try {
             os.write(compressed, 0, compressedSize);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void encode(Object value) {
