@@ -15,5 +15,4 @@ public interface Encoder<T> {
   public void encode(Iterator<T> values);
 
   public void encode(T value);
-
 }
