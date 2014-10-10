@@ -43,6 +43,5 @@ public class RunLengthEncoder implements Encoder{
 
     @Override
     public void encode(Object value) {
-
     }
 }
