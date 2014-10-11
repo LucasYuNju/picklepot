@@ -13,6 +13,6 @@ public interface Decoder<T> {
      * @param className class name of target object
      * @return iterator of object collection
      */
-    public Iterator<T> decode(byte[] bytes, int numObject, String className);
+    public Iterator<T> decode(byte[] bytes, String className);
 
 }

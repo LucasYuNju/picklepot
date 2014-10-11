@@ -37,7 +37,7 @@ public class EncoderTest {
         encoder.encode(list.iterator());
         ByteArrayOutputStream bos = (ByteArrayOutputStream) encoder.getOutputStream();
 
-        Iterator iterator = decoder.decode(bos.toByteArray(), list.size(), String.class.getName());
+        Iterator iterator = decoder.decode(bos.toByteArray(), String.class.getName());
         for(Object expected : list) {
             assertTrue(iterator.hasNext());
             assertEquals(expected, iterator.next());

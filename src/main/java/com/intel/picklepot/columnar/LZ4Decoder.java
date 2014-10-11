@@ -11,12 +11,11 @@ public class LZ4Decoder implements Decoder{
     /**
      * performance could be improved
      * @param bytes     compressed bytes
-     * @param numObject
      * @param className class name of target object
      * @return iterator of object collection
      */
     @Override
-    public Iterator decode(byte[] bytes, int numObject, String className) {
+    public Iterator decode(byte[] bytes, String className) {
         LZ4Factory factory = LZ4Factory.fastestInstance();
         LZ4SafeDecompressor decompressor = factory.safeDecompressor();
         byte[] decompressed = new byte[bytes.length * maxCompressionRatio];

@@ -53,7 +53,7 @@ public class RunLengthIntegerReader {
         }
     }
 
-    boolean hasNext() throws IOException {
+    public boolean hasNext() throws IOException {
         return used != numLiterals || input.available() > 0;
     }
 
