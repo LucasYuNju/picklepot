@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RunLengthDecoder implements Decoder{
     @Override
-    public Iterator decode(byte[] bytes,int numObject, String className) {
+    public Iterator decode(byte[] bytes, String className) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
         byteBuffer.put(bytes);
         byteBuffer.flip();
@@ -22,12 +22,12 @@ public class RunLengthDecoder implements Decoder{
             e.printStackTrace();
         }
         List<Integer> list = new LinkedList<Integer>();
-        for(int i=0; i<numObject; i++) {
-            try {
-                list.add((int)reader.next());
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            while(reader.hasNext()) {
+                list.add((int) reader.next());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return list.iterator();
     }
