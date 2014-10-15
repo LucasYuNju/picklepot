@@ -35,10 +35,11 @@ public class Bytes {
     }
 
     public static Iterator toPrimitiveType(byte[] bytes, String className) {
-        if(className.equals(String.class.getName())) {
+        className = className.replace("class", "").trim();
+        if(String.class.getName().equals(className)) {
             return byteToString(bytes);
         }
-        else if(className.equals(Integer.class.getName())) {
+        else if(Integer.class.getName().equals(className) || className.equals("int")) {
             return byteToInteger(bytes);
         }
         else {
@@ -89,8 +90,9 @@ public class Bytes {
 
     private static Iterator byteToInteger(byte[] bytes) {
         List<Integer> list = new LinkedList<Integer>();
-        for(int i=0; i<bytes.length/Integer.SIZE; i++) {
-            final ByteBuffer bb = ByteBuffer.wrap(bytes, i * Integer.SIZE, Integer.SIZE);
+        int sizeofInt = Integer.SIZE / Byte.SIZE;
+        for(int i=0; i<bytes.length/sizeofInt; i++) {
+            final ByteBuffer bb = ByteBuffer.wrap(bytes, i * sizeofInt, sizeofInt);
             list.add(bb.getInt());
         }
         return list.iterator();

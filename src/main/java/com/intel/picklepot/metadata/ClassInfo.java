@@ -3,10 +3,11 @@ package com.intel.picklepot.metadata;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class ClassInfo<T> implements Serializable {
   private Class<T> classIns;
-  private Map<String, FieldInfo> fieldInfos = new HashMap<String, FieldInfo>();
+  private Map<String, FieldInfo> fieldInfos = new TreeMap<String, FieldInfo>();
 
   public ClassInfo(Class<T> aClass) {
     this.classIns = aClass;

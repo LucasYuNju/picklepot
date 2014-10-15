@@ -100,7 +100,9 @@ class DumbPicklePot implements PicklePot<Pair> {
       List<byte[]> fieldsByte = new ArrayList<byte[]>();
       fieldsByte.add(wordStream.toByteArray());
       fieldsByte.add(countStream.toByteArray());
-      output.writeObjects(classInfo, fieldsByte);
+      output.writeClassInfo(classInfo);
+      for(byte[] bytes : fieldsByte)
+        output.writeFieldByte(bytes);
     }
   }
 }
