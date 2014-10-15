@@ -43,5 +43,6 @@ public class EncoderTest {
             assertEquals(expected, iterator.next());
         }
         assertFalse(iterator.hasNext());
+
     }
 }
