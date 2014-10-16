@@ -20,7 +20,7 @@ public class SimpleTest {
     PicklePotImpl<Pair> picklePot = new PicklePotImpl<Pair>();
     File file = new File("test.ser");
 
-    //encode
+    //serialize
     picklePot.initialize(Pair.class, new SimpleDataOutput(new FileOutputStream(file)), null);
     Pair wc1 = new Pair("hello", 1);
     Pair wc2 = new Pair("world", 2);
@@ -28,7 +28,7 @@ public class SimpleTest {
     picklePot.add(wc2);
     picklePot.flush();
 
-    //decode
+    //deserialize
     SimpleDataInput dataInput = new SimpleDataInput();
     dataInput.initialize(new FileInputStream(file));
     Iterator iterator = picklePot.deserialize(dataInput);

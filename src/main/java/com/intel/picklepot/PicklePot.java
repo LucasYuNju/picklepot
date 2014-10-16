@@ -4,7 +4,6 @@ import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.storage.DataInput;
 import com.intel.picklepot.storage.DataOutput;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -40,5 +39,5 @@ public interface PicklePot<T> {
    * @param input
    * @return
    */
-  public Iterator<T> deserialize(DataInput input) throws PicklePotException, IOException, ClassNotFoundException;
+  public Iterator<T> deserialize(DataInput input) throws PicklePotException;
 }

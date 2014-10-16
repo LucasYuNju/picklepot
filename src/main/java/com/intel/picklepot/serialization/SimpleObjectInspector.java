@@ -8,13 +8,14 @@ import java.util.Map;
 
 public class SimpleObjectInspector<T> implements ObjectInspector<T> {
   private Class<T> className;
+  private Field[] fields;
 
   public SimpleObjectInspector(Class<T> className) {
     this.className = className;
+    fields = className.getDeclaredFields();
   }
 
   public Map<String, Object> inspect(T obj) throws PicklePotException {
-    Field[] fields = className.getDeclaredFields();
     Map<String, Object> fieldMapping = new HashMap<String, Object>(fields.length);
     for (Field field : fields) {
       String fieldName = field.getName();

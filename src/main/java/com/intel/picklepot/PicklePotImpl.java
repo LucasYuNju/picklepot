@@ -1,9 +1,6 @@
 package com.intel.picklepot;
 
-import com.intel.picklepot.columnar.Decoder;
-import com.intel.picklepot.columnar.Encoder;
-import com.intel.picklepot.columnar.LZ4Decoder;
-import com.intel.picklepot.columnar.LZ4Encoder;
+import com.intel.picklepot.columnar.*;
 import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.metadata.FieldInfo;
 import com.intel.picklepot.serialization.InstancePot;
@@ -30,8 +27,6 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   private Map<String, String> configuration;
   private InstancePot<T> instancePot;
   private volatile long count = 0;
-  private Encoder<T> lz4Encoder = new LZ4Encoder();
-  private Decoder<T> lz4Decoder = new LZ4Decoder();
 
   @Override
   public void initialize(Class<T> className, DataOutput output, Map<String, String> configuration) {
@@ -66,18 +61,27 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   }
 
   @Override
-  public Iterator<T> deserialize(DataInput input) throws PicklePotException, IOException, ClassNotFoundException {
+  public Iterator<T> deserialize(DataInput input) throws PicklePotException {
     SimpleDataInput dataInput = (SimpleDataInput) input;
-    dataInput.readObjects();
+
+    try {
+      dataInput.readObjects();
+    } catch (IOException e) {
+      throw new PicklePotException(e);
+    } catch (ClassNotFoundException e) {
+      throw new PicklePotException(e);
+    }
     List<byte[]> fieldBytesList = dataInput.getFieldsByte();
     List<Iterator> fieldValueIterators = new LinkedList<Iterator>();
-    Iterator<FieldInfo> fieldInfos = instancePot.getClassInfo().getFieldInfos().values().iterator();
+    Iterator<FieldInfo> fieldInfos = dataInput.getClassInfo().getFieldInfos().values().iterator();
     for(int i=0; fieldInfos.hasNext(); i++) {
-      Iterator iterator = lz4Decoder.decode(fieldBytesList.get(i), fieldInfos.next().getFieldType().toString());
+      FieldInfo curFieldInfo = fieldInfos.next();
+      Decoder decoder = getDecoder(curFieldInfo.getFieldType().toString());
+      Iterator iterator = decoder.decode(fieldBytesList.get(i),curFieldInfo.getFieldType().toString());
       fieldValueIterators.add(iterator);
     }
 
-    Class<T> clazz = instancePot.getClassInfo().getClassIns();
+    Class<T> clazz = dataInput.getClassInfo().getClassIns();
     Field[] fields = clazz.getFields();
     for(Field field : fields) {
       field.setAccessible(true);
@@ -94,7 +98,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
         }
         result.add(object);
       } catch (IllegalAccessException e) {
-        e.printStackTrace();
+        throw new PicklePotException(e);
       }
     }
     return result.iterator();
@@ -103,22 +107,55 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   /**
    * do the compression work and flush to DataOutput.
    */
-  public void flush() throws IOException, PicklePotException {
+  public void flush() throws PicklePotException {
     SimpleDataOutput dataOutput = (SimpleDataOutput) this.dataOutput;
-    dataOutput.writeClassInfo(instancePot.getClassInfo());
-    Iterator<String> fieldNames = instancePot.getClassInfo().getFieldInfos().keySet().iterator();
-    while(fieldNames.hasNext()) {
-      List<Object> list = instancePot.getFieldValues(fieldNames.next());
-        Iterator iterator = list.iterator();
-        lz4Encoder.encode(iterator);
-        ByteArrayOutputStream outputStream = (ByteArrayOutputStream) lz4Encoder.getOutputStream();
+    try {
+      dataOutput.writeClassInfo(instancePot.getClassInfo());
+    } catch (IOException e) {
+      throw new PicklePotException();
+    }
+    Iterator<FieldInfo> fieldInfos = instancePot.getClassInfo().getFieldInfos().values().iterator();
+    while(fieldInfos.hasNext()) {
+      FieldInfo curFieldInfo = fieldInfos.next();
+      List<Object> list = instancePot.getFieldValues(curFieldInfo.getFieldName());
+      Iterator iterator = list.iterator();
+
+      try {
+        Encoder encoder = getEncoder(curFieldInfo.getFieldType().toString());
+        encoder.encode(iterator);
+        ByteArrayOutputStream outputStream = (ByteArrayOutputStream) encoder.getOutputStream();
         dataOutput.writeFieldByte(outputStream.toByteArray());
+      } catch (IOException e) {
+        throw new PicklePotException(e);
       }
+    }
     dataOutput.close();
   }
 
   // just used for unit test.
-  public InstancePot<T> getInstancePot() {
+  public InstancePot getInstancePot() {
     return instancePot;
+  }
+
+  //TODO this method may be placed elsewhere
+  private Encoder<T> getEncoder(String classToEncode) {
+    classToEncode = classToEncode.replace("class", "").trim();
+    if(Integer.class.getName().equals(classToEncode) || classToEncode.equals("int")) {
+      return new RunLengthEncoder();
+    }
+    else {
+      return new LZ4Encoder();
+    }
+  }
+
+  //TODO this method may be placed elsewhere
+  private Decoder getDecoder(String classToDecode) {
+    classToDecode = classToDecode.replace("class", "").trim();
+    if(Integer.class.getName().equals(classToDecode) || classToDecode.equals("int")) {
+      return new RunLengthDecoder();
+    }
+    else {
+      return new LZ4Decoder();
+    }
   }
 }
