@@ -74,7 +74,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     List<byte[]> fieldBytesList = dataInput.getFieldsByte();
     List<Iterator> fieldValueIterators = new LinkedList<Iterator>();
     Iterator<FieldInfo> fieldInfos = dataInput.getClassInfo().getFieldInfos().values().iterator();
-    for(int i=0; fieldInfos.hasNext(); i++) {
+    while(fieldInfos.hasNext()) {
       FieldInfo curFieldInfo = fieldInfos.next();
       Decoder decoder = getDecoder(curFieldInfo.getFieldType().toString());
       Iterator iterator = decoder.decode(fieldBytesList.get(i),curFieldInfo.getFieldType().toString());
@@ -137,7 +137,10 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     return instancePot;
   }
 
-  //TODO this method may be placed elsewhere
+  /**
+   * TODO
+   * default encoding policy. this method may be placed elsewhere
+   */
   private Encoder<T> getEncoder(String classToEncode) {
     classToEncode = classToEncode.replace("class", "").trim();
     if(Integer.class.getName().equals(classToEncode) || classToEncode.equals("int")) {
@@ -148,7 +151,10 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     }
   }
 
-  //TODO this method may be placed elsewhere
+  /**
+   * TODO
+   * default decoding policy. this method may be placed elsewhere
+   */
   private Decoder getDecoder(String classToDecode) {
     classToDecode = classToDecode.replace("class", "").trim();
     if(Integer.class.getName().equals(classToDecode) || classToDecode.equals("int")) {
