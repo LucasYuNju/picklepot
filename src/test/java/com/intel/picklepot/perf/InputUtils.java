@@ -8,8 +8,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class InputUtils {
-  //  private static File inFile = new File("enwik8");
-  private static File inFile = new File("enwik6");
+  private static File inFile = new File("enwik8");
   private static List<Pair> pairs;
   private static long dataSize;
 
@@ -20,7 +19,7 @@ public class InputUtils {
     Scanner in = new Scanner(inFile);
     Map<String, Integer> map = new HashMap<String, Integer>();
     while (in.hasNext()) {
-      for (String str : in.nextLine().split("[\\s\\.<>#$%&*@,;\\]\\?\\[!_\"'“”\\(\\)\\+-/]")) {
+      for (String str : in.nextLine().split("[\\s\\.\\]\\[\\?\\(\\)\\+<>#$%&*@,:;!_\"'“”-]")) {
         str = str.toLowerCase();
         if (!map.containsKey(str)) {
           map.put(str, 1);

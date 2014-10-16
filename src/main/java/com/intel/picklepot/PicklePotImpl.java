@@ -74,7 +74,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     List<byte[]> fieldBytesList = dataInput.getFieldsByte();
     List<Iterator> fieldValueIterators = new LinkedList<Iterator>();
     Iterator<FieldInfo> fieldInfos = dataInput.getClassInfo().getFieldInfos().values().iterator();
-    while(fieldInfos.hasNext()) {
+    for(int i=0; fieldInfos.hasNext(); i++) {
       FieldInfo curFieldInfo = fieldInfos.next();
       Decoder decoder = getDecoder(curFieldInfo.getFieldType().toString());
       Iterator iterator = decoder.decode(fieldBytesList.get(i),curFieldInfo.getFieldType().toString());
