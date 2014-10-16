@@ -1,3 +1,4 @@
+
 package com.intel.picklepot.storage;
 
 public interface DataOutput {

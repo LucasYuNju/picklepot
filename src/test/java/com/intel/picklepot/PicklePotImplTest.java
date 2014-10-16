@@ -30,13 +30,3 @@ public class PicklePotImplTest {
   }
 }
 
-
-class Pair {
-  public String word;
-  public int count;
-
-  public Pair(String word, int count) {
-    this.word = word;
-    this.count = count;
-  }
-}

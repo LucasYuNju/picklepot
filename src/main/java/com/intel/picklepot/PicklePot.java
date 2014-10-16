@@ -39,5 +39,5 @@ public interface PicklePot<T> {
    * @param input
    * @return
    */
-  public Iterator<T> deserialize(DataInput input);
+  public Iterator<T> deserialize(DataInput input) throws PicklePotException;
 }
