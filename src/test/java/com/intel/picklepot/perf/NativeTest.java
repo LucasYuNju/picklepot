@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class NativeTest extends Template {
-//  File outFile = new File("picklepot.ser");
 
   public NativeTest(int repeations) {
     super("java native", repeations);

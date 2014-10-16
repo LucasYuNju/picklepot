@@ -5,7 +5,7 @@ import java.util.List;
 
 //kryo serialize list directly
 public class TestPerf {
-  static final int REPEATION = 5;
+  static final int REPEATION = 4;
 
   public static void main(String args[]) throws Exception {
     InputUtils.getPairs();
