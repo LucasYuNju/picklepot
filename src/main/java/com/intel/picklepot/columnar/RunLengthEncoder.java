@@ -1,5 +1,6 @@
 package com.intel.picklepot.columnar;
 
+import com.intel.picklepot.StopWatch;
 import com.intel.picklepot.columnar.runlength.RunLengthIntegerWriter;
 
 import java.io.ByteArrayOutputStream;
@@ -22,6 +23,7 @@ public class RunLengthEncoder implements Encoder {
     if (!values.hasNext()) {
       return;
     }
+    StopWatch.start();
     Object obj = values.next();
     if (obj.getClass() != Integer.class) {
       System.err.println("unsupported type:" + obj.getClass());
@@ -39,6 +41,7 @@ public class RunLengthEncoder implements Encoder {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    StopWatch.stop("compress Integer");
   }
 
   @Override
