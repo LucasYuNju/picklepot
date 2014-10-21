@@ -119,7 +119,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     Iterator<FieldInfo> fieldInfos = instancePot.getClassInfo().getFieldInfos().values().iterator();
     while(fieldInfos.hasNext()) {
       FieldInfo curFieldInfo = fieldInfos.next();
-      List<Object> list = instancePot.getFieldValues(curFieldInfo.getFieldName());
+      List<?> list = instancePot.getFieldValues(curFieldInfo.getFieldName());
       Iterator iterator = list.iterator();
 
       try {

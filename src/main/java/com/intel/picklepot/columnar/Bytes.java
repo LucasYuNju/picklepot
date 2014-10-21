@@ -11,21 +11,12 @@ import java.util.List;
 public class Bytes {
   private static final byte split = '\01';
 
-  public static byte[] toBytes(Iterator values) {
+  public static byte[] toBytes(Iterator<String> values) {
     if (!values.hasNext())
       return new byte[0];
-    Object obj = values.next();
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     try {
-      if (obj.getClass() == String.class) {
-        stringToByte((String) obj, bos);
         stringToByte(values, bos);
-      } else if (obj.getClass() == Integer.class) {
-        integerToByte((Integer) obj, bos);
-        integerToByte(values, bos);
-      } else {
-        System.err.println("unsupported type:" + obj.getClass().getName());
-      }
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -43,15 +34,10 @@ public class Bytes {
     }
   }
 
-  private static void stringToByte(String str, ByteArrayOutputStream bos) throws IOException {
-    bos.write(str.getBytes());
-    bos.write(new byte[]{split});
-  }
-
-  private static void stringToByte(Iterator values, ByteArrayOutputStream bos) throws IOException {
+  private static void stringToByte(Iterator<String> values, ByteArrayOutputStream bos) throws IOException {
     while (values.hasNext()) {
-      String str = (String) values.next();
-      stringToByte(str, bos);
+      bos.write(values.next().getBytes());
+      bos.write(new byte[]{split});
     }
   }
 

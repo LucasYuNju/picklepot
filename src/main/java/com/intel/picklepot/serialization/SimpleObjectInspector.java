@@ -4,6 +4,8 @@ import com.intel.picklepot.exception.PicklePotException;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class SimpleObjectInspector<T> implements ObjectInspector<T> {
@@ -15,17 +17,18 @@ public class SimpleObjectInspector<T> implements ObjectInspector<T> {
     fields = className.getDeclaredFields();
   }
 
-  public Map<String, Object> inspect(T obj) throws PicklePotException {
-    Map<String, Object> fieldMapping = new HashMap<String, Object>(fields.length);
+  public void inspect(T obj, List<List<Object>> fieldCube) throws PicklePotException {
+    Iterator<List<Object>> iterator = fieldCube.iterator();
     for (Field field : fields) {
+      List<Object> valueList = iterator.next();
       String fieldName = field.getName();
       try {
         if (field.isAccessible()) {
-          fieldMapping.put(fieldName, field.get(obj));
+          valueList.add(field.get(obj));
         } else {
           try {
             field.setAccessible(true);
-            fieldMapping.put(fieldName, field.get(obj));
+            valueList.add(field.get(obj));
           } finally {
             field.setAccessible(false);
           }
@@ -34,6 +37,5 @@ public class SimpleObjectInspector<T> implements ObjectInspector<T> {
         throw new PicklePotException("Failed to get field[" + fieldName + "] value.", e);
       }
     }
-    return fieldMapping;
   }
 }

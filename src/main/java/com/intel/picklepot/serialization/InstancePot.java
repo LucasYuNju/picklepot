@@ -5,8 +5,8 @@ import com.intel.picklepot.metadata.ClassInfo;
 import com.intel.picklepot.metadata.FieldInfo;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +14,8 @@ public class InstancePot<T> {
 
   private ClassInfo<T> classInfo;
   private ObjectInspector inspector;
-  private Map<String, List<Object>> fieldsValue = new HashMap<String, List<Object>>();
+  private Map<String, List<?>> fieldsMap = new HashMap<String, List<?>>();
+  private List<List<?>> fieldsList = new LinkedList<List<?>>();
 
   public InstancePot(Class<T> aClass) {
     this.classInfo = initiate(aClass);
@@ -23,29 +24,34 @@ public class InstancePot<T> {
 
   private ClassInfo<T> initiate(Class<T> aClass) {
     classInfo = new ClassInfo<T>(aClass);
-    Field[] fields = aClass.getFields();
+    Field[] fields = aClass.getDeclaredFields();
     for (Field field : fields) {
-      FieldInfo fieldInfo = new FieldInfo(field.getName(), field.getType());
+      Class<?> fieldType = field.getType();
+      FieldInfo fieldInfo = new FieldInfo(field.getName(), fieldType);
       classInfo.putFieldInfo(fieldInfo);
+      if (fieldType.equals(String.class)) {
+        List<String> objects = new LinkedList<String>();
+        fieldsMap.put(field.getName(), objects);
+        fieldsList.add(objects);
+      } else if (fieldType.equals(Integer.class) || fieldType.getName().equals("int")) {
+        List<Integer> objects = new LinkedList<Integer>();
+        fieldsMap.put(field.getName(), objects);
+        fieldsList.add(objects);
+      } else {
+        throw new RuntimeException("do not support field type:" + fieldType);
+      }
     }
     return classInfo;
   }
 
   public void addObjectValue(Object obj) throws PicklePotException {
-    Map<String, Object> objectValue = this.inspector.inspect(obj);
-    for (String key : objectValue.keySet()) {
-      Object value = objectValue.get(key);
-      List<Object> fieldValues = fieldsValue.get(key);
-      if (fieldValues == null) {
-        fieldValues = new ArrayList<Object>();
-        fieldsValue.put(key, fieldValues);
-      }
-      fieldValues.add(value);
-    }
+    // add field value into value list directly, as fields order in inspector should be same as
+    // fieldsList order.
+    this.inspector.inspect(obj, fieldsList);
   }
 
-  public List<Object> getFieldValues(String fieldName) {
-    return fieldsValue.get(fieldName);
+  public List<?> getFieldValues(String fieldName) {
+    return fieldsMap.get(fieldName);
   }
 
   public ClassInfo<T> getClassInfo() {

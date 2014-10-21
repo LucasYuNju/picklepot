@@ -22,8 +22,8 @@ public class PicklePotImplTest {
 
     InstancePot<Pair> instancePot = picklePot.getInstancePot();
     ClassInfo<Pair> classInfo = instancePot.getClassInfo();
-    List<Object> wordList = instancePot.getFieldValues("word");
-    List<Object> countList = instancePot.getFieldValues("count");
+    List<?> wordList = instancePot.getFieldValues("word");
+    List<?> countList = instancePot.getFieldValues("count");
 
     assertEquals(wordList.toString(), "[hello, world]");
     assertEquals(countList.toString(), "[1, 2]");

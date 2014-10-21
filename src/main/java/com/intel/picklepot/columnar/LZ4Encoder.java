@@ -9,7 +9,7 @@ import com.intel.picklepot.StopWatch;
 import net.jpountz.lz4.LZ4Compressor;
 import net.jpountz.lz4.LZ4Factory;
 
-public class LZ4Encoder implements Encoder {
+public class LZ4Encoder<T> implements Encoder<T> {
   private OutputStream os;
 
   @Override
@@ -20,10 +20,10 @@ public class LZ4Encoder implements Encoder {
   }
 
   @Override
-  public void encode(Iterator values) {
+  public void encode(Iterator<T> values) {
     StopWatch.start();
-    byte[] input = Bytes.toBytes(values);
-    StopWatch.stop("Iterator<String> to byte[]");
+    byte[] input = Bytes.toBytes((Iterator<String>)values);
+    StopWatch.stop("Iterator<String> to byte["+input.length+"]");
 
     StopWatch.start();
     LZ4Compressor compressor = LZ4Factory.fastestInstance().fastCompressor();
