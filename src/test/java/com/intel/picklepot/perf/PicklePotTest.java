@@ -4,6 +4,7 @@ import com.intel.picklepot.Pair;
 import com.intel.picklepot.PicklePotImpl;
 import com.intel.picklepot.storage.SimpleDataInput;
 import com.intel.picklepot.storage.SimpleDataOutput;
+import com.intel.picklepot.StopWatch;
 
 import java.io.*;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ public class PicklePotTest extends Template {
     picklePot.initialize(Pair.class, new SimpleDataOutput(outputStream), null);
     List<Pair> pairs = InputUtils.getPairs();
     picklePot.add(pairs.iterator());
+
     picklePot.flush();
     serialized = outputStream.toByteArray();
   }

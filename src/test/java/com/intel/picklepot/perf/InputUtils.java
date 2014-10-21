@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class InputUtils {
-  private static File inFile = new File("enwik8");
+  private static File inFile = new File("pairs.data");
   private static List<Pair> pairs;
   private static long dataSize;
 
@@ -15,13 +15,15 @@ public class InputUtils {
     if(pairs != null)
       return pairs;
     pairs = new ArrayList<Pair>();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("pairs.data"))));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inFile)));
     String line;
     while((line = reader.readLine()) != null){
       String[] strs = line.split(" ");
       Pair p = new Pair(strs[0], Integer.parseInt(strs[1]));
+      dataSize += strs[0].length() + 4;
       pairs.add(p);
     }
+    System.out.printf("dataSize:%,d\n", dataSize);
     return pairs;
   }
 
