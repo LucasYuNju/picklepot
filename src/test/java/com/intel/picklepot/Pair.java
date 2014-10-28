@@ -6,6 +6,7 @@ import java.io.Serializable;
 public class Pair implements Serializable{
   public String word;
   public int count;
+  public char needless = 1;
 
   //default constructor for kryo serialization
   public Pair() {
