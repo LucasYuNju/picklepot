@@ -68,9 +68,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
     try {
       dataInput.readObjects();
-    } catch (IOException e) {
-      throw new PicklePotException(e);
-    } catch (ClassNotFoundException e) {
+    } catch (Exception e) {
       throw new PicklePotException(e);
     }
     List<byte[]> fieldBytesList = dataInput.getFieldsByte();
@@ -92,16 +90,23 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     Objenesis objenesis = new ObjenesisStd();
     ObjectInstantiator instantiator = objenesis.getInstantiatorOf(clazz);
     List<T> result = new LinkedList<T>();
-    while(!fieldValueIterators.isEmpty() && fieldValueIterators.get(0).hasNext()) {
-      try {
-        T object = (T) instantiator.newInstance();
-        for(int i=0; i<fields.length; i++) {
-          fields[i].set(object, fieldValueIterators.get(fields.length - 1 - i).next());
+    if(!InstancePot.isUnsupportedInstance(clazz)) {
+      while (!fieldValueIterators.isEmpty() && fieldValueIterators.get(0).hasNext()) {
+        try {
+          T object = (T) instantiator.newInstance();
+          for (int i = 0; i < fields.length; i++) {
+            fields[i].set(object, fieldValueIterators.get(i).next());
+          }
+          result.add(object);
+        } catch (IllegalAccessException e) {
+          throw new PicklePotException(e);
         }
-        result.add(object);
-      } catch (IllegalAccessException e) {
-        throw new PicklePotException(e);
       }
+    }
+    else {
+      Iterator instances = fieldValueIterators.get(0);
+      while(instances.hasNext())
+        result.add((T) instances.next());
     }
     return result.iterator();
   }
@@ -148,8 +153,11 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     if(Integer.class.getName().equals(classToEncode) || classToEncode.equals("int")) {
       return new RunLengthEncoder();
     }
-    else {
+    else if(String.class.getName().equals(classToEncode)){
       return new LZ4Encoder();
+    }
+    else {
+      return new JavaEncoder<T>();
     }
   }
 
@@ -162,8 +170,11 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     if(Integer.class.getName().equals(classToDecode) || classToDecode.equals("int")) {
       return new RunLengthDecoder();
     }
-    else {
+    else if(String.class.getName().equals(classToDecode)) {
       return new LZ4Decoder();
+    }
+    else {
+      return new JavaDecoder();
     }
   }
 }
