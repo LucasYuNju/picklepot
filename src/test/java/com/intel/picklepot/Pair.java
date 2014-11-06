@@ -2,13 +2,12 @@ package com.intel.picklepot;
 
 import java.io.Serializable;
 
-//implements Serializabel for java native serialization
+//implements Serializabel ro enable java native serialization
 public class Pair implements Serializable{
   public String word;
   public int count;
-  public char needless = 1;
 
-  //default constructor for kryo serialization
+  //default constructor to enable kryo serialization
   public Pair() {
 
   }

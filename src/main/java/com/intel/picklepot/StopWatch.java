@@ -2,6 +2,7 @@ package com.intel.picklepot;
 
 public class StopWatch {
   private static long startTimeNanos;
+  public static boolean enabled = false;
 
   @Override
   public boolean equals(Object obj) {
@@ -17,6 +18,7 @@ public class StopWatch {
    */
   public static void stop(String info) {
     long time = System.nanoTime() - startTimeNanos;
-    System.out.printf(info + ":%,dms\n", time / 1000000);
+    if(enabled)
+      System.out.printf(info + ":%,dms\n", time / 1000000);
   }
 }

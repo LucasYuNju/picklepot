@@ -89,7 +89,7 @@ public class InstancePot<T> {
       Class<?> fieldType = field.getType();
       if(!fieldType.equals(String.class)
           && !fieldType.equals(Integer.class)
-          && fieldType.equals(Integer.TYPE)) {
+          && !fieldType.equals(Integer.TYPE)) {
         return true;
       }
     }
