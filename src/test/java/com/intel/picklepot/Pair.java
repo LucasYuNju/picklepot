@@ -2,7 +2,7 @@ package com.intel.picklepot;
 
 import java.io.Serializable;
 
-//implements Serializabel ro enable java native serialization
+//implements Serializabel to enable java native serialization
 public class Pair implements Serializable{
   public String word;
   public int count;
