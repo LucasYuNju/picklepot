@@ -9,9 +9,8 @@ import java.util.List;
 public class TestPerf {
   static final int REPETITION = 4;
 
-//  @Test
-//  public void test() throws Exception {
-  public static void main(String args[]) throws Exception{
+  @Test
+  public void test() throws Exception {
     InputUtils.getPairs();
     List<Template> tests = new LinkedList<Template>();
     tests.add(new PicklePotTest(REPETITION));
