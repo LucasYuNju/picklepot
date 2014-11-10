@@ -32,8 +32,11 @@ public abstract class Template {
 
   public void printStatistics() {
     System.out.print(name + "\t");
-    System.out.printf("serialSize:%,d serialTime:%,dms serialSpeed:%,dMB/s deserialTime:%,dms\n",
-        getSerialiedSize(), serialTimeNanos / 1000000, InputUtils.getDataSize() * 1000 / serialTimeNanos, deserialTimeNanos / 1000000);
+    System.out.printf("serialSize:%,d serialTime:%,dms serialSpeed:%,dMB/s deserialTime:%,dms, deserialSpeed:%,dMB\n",
+        getSerialiedSize(), serialTimeNanos / 1000000,
+            InputUtils.getDataSize() * 1000 / serialTimeNanos,
+            deserialTimeNanos / 1000000,
+            InputUtils.getDataSize() * 1000 / deserialTimeNanos);
   }
 
   private long getSerialiedSize() {

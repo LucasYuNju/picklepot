@@ -7,9 +7,11 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 public class Bytes {
   private static final byte split = '\01';
+  private static final byte[] splitArray = new byte[] {split};
 
   public static byte[] toBytes(Iterator<String> values) {
     if (!values.hasNext())
@@ -36,8 +38,8 @@ public class Bytes {
 
   private static void stringToByte(Iterator<String> values, ByteArrayOutputStream bos) throws IOException {
     while (values.hasNext()) {
-      bos.write(values.next().getBytes());
-      bos.write(new byte[]{split});
+      bos.write(values.next().getBytes(StandardCharsets.UTF_8));
+      bos.write(splitArray);
     }
   }
 
@@ -57,12 +59,7 @@ public class Bytes {
     List<String> list = new LinkedList<String>();
     for (int i = 0; i < bytes.length; i++) {
       if (bytes[i] == split) {
-        String str = null;
-        try {
-          str = new String(bytes, begin, i - begin, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
-        }
+        String str = new String(bytes, begin, i - begin, StandardCharsets.UTF_8);
         list.add(str);
         begin = i + 1;
       }

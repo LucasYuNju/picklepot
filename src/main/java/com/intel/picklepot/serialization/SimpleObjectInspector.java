@@ -21,7 +21,6 @@ public class SimpleObjectInspector<T> implements ObjectInspector<T> {
     Iterator<List<Object>> iterator = fieldCube.iterator();
     for (Field field : fields) {
       List<Object> valueList = iterator.next();
-      String fieldName = field.getName();
       try {
         if (field.isAccessible()) {
           valueList.add(field.get(obj));
@@ -34,6 +33,7 @@ public class SimpleObjectInspector<T> implements ObjectInspector<T> {
           }
         }
       } catch (IllegalAccessException e) {
+        String fieldName = field.getName();
         throw new PicklePotException("Failed to get field[" + fieldName + "] value.", e);
       }
     }
