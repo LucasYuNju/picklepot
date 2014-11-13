@@ -32,19 +32,4 @@ public class EnumDecoder implements Decoder<String> {
     }
     return strs.iterator();
   }
-
-//  public static void main(String args[]) {
-//    List<String> input = new ArrayList<String>();
-//    String[] dict = new String[]{"huffmana", "smappyaa", "runlengt", "deflatea"};
-//    Random random = new Random();
-//    for(int i=0; i<10000; i++) {
-//      input.add(dict[random.nextInt(dict.length)]);
-//    }
-//    EnumEncoder encoder = new EnumEncoder();
-//    EnumDecoder decoder = new EnumDecoder();
-//    encoder.encode(input.iterator());
-//    byte[] encoded = ((ByteArrayOutputStream)encoder.getOutputStream()).toByteArray();
-//    Iterator<String> decoded = decoder.decode(encoded, String.class.getName());
-//    return;
-//  }
 }
