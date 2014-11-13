@@ -10,8 +10,7 @@ import java.util.List;
 import java.nio.charset.StandardCharsets;
 
 public class Bytes {
-  private static final byte split = '\01';
-  private static final byte[] splitArray = new byte[] {split};
+  static final byte split = '\01';
 
   public static byte[] toBytes(Iterator<String> values) {
     if (!values.hasNext())
@@ -39,7 +38,7 @@ public class Bytes {
   private static void stringToByte(Iterator<String> values, ByteArrayOutputStream bos) throws IOException {
     while (values.hasNext()) {
       bos.write(values.next().getBytes(StandardCharsets.UTF_8));
-      bos.write(splitArray);
+      bos.write(split);
     }
   }
 

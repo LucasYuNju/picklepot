@@ -28,7 +28,7 @@ public class JavaEncoder<T> implements Encoder<T>{
   }
 
   @Override
-  public void encode(Iterator<T> values) {
+  public void encode(Iterator<T> values, int num) {
     while(values.hasNext()) {
       try {
         oos.writeObject(values.next());

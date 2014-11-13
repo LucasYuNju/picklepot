@@ -1,9 +1,15 @@
 package com.intel.picklepot.columnar;
 
+import net.jpountz.lz4.LZ4BlockInputStream;
 import net.jpountz.lz4.LZ4Factory;
 import net.jpountz.lz4.LZ4SafeDecompressor;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class LZ4Decoder implements Decoder {
   private static final int maxCompressionRatio = 5;
@@ -17,16 +23,31 @@ public class LZ4Decoder implements Decoder {
    */
   @Override
   public Iterator decode(byte[] bytes, String className) {
-    LZ4Factory factory = LZ4Factory.fastestInstance();
-    LZ4SafeDecompressor decompressor = factory.safeDecompressor();
-    byte[] decompressed = new byte[bytes.length * maxCompressionRatio];
-    int decompressedSize = decompressor.decompress(bytes, 0, bytes.length, decompressed, 0);
-    while (decompressedSize > decompressed.length) {
-      decompressed = new byte[decompressed.length * 2];
-      decompressedSize = decompressor.decompress(bytes, 0, bytes.length, decompressed, 0);
+    int numStr = ByteBuffer.wrap(bytes, 0, 4).getInt();
+    List<String> res = new ArrayList<String>(numStr);
+    LZ4BlockInputStream lz4 = new LZ4BlockInputStream(new ByteArrayInputStream(bytes, 4, bytes.length - 4));
+    byte[] decompressed = new byte[64 * 1024];
+    int toRead = 0;
+    while (res.size() < numStr) {
+      try {
+        int numFetched = lz4.read(decompressed, toRead, decompressed.length - toRead);
+        toRead += numFetched;
+        int lastSplit = -1;
+        for (int i = 0; i < toRead; i++) {
+          if (decompressed[i] == Bytes.split) {
+            String str = null;
+            str = new String(decompressed, lastSplit + 1, i - lastSplit - 1, "utf-8");
+            res.add(str);
+            lastSplit = i;
+          }
+        }
+        int remain = toRead - lastSplit - 1;
+        System.arraycopy(decompressed, lastSplit + 1, decompressed, 0, remain);
+        toRead = remain;
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
-    byte[] truncated = new byte[decompressedSize];
-    System.arraycopy(decompressed, 0, truncated, 0, decompressedSize);
-    return Bytes.toPrimitiveType(truncated, className);
+    return res.iterator();
   }
 }

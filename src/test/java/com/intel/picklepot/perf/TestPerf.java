@@ -13,7 +13,6 @@ public class TestPerf {
 
   @Test
   public void test() throws Exception {
-    InputUtils.getPairs();
     List<Template> tests = new LinkedList<Template>();
     tests.add(new NativeTest(REPETITION));
     tests.add(new PicklePotTest(REPETITION));

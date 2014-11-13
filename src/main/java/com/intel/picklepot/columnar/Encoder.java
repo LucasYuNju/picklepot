@@ -14,7 +14,7 @@ public interface Encoder<T> {
 
   public OutputStream getOutputStream();
 
-  public void encode(Iterator<T> values);
+  public void encode(Iterator<T> values, int num);
 
   public void encode(T value);
 
