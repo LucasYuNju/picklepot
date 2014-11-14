@@ -19,7 +19,7 @@ public class RunLengthEncoder implements Encoder {
   }
 
   @Override
-  public void encode(Iterator values) {
+  public void encode(Iterator values, int num) {
     if (!values.hasNext()) {
       return;
     }

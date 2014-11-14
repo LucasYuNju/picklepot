@@ -129,7 +129,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
       try {
         Encoder encoder = getEncoder(curFieldInfo.getFieldType().toString());
-        encoder.encode(iterator);
+        encoder.encode(iterator, list.size());
         ByteArrayOutputStream outputStream = (ByteArrayOutputStream) encoder.getOutputStream();
         dataOutput.writeFieldByte(outputStream.toByteArray());
       } catch (IOException e) {
