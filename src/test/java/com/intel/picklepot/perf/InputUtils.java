@@ -1,71 +1,56 @@
 package com.intel.picklepot.perf;
 
 import com.intel.picklepot.Pair;
+import com.intel.picklepot.Order;
 
 import java.io.*;
 import java.util.*;
-import java.util.Map.Entry;
 
 public class InputUtils {
-  private static File inFile = new File("pairs.data");
-  private static List<Pair> pairs;
+  private static List<Object> objects;
   private static long dataSize;
 
-  static List<Pair> getPairs() throws IOException {
-    if(pairs != null)
-      return pairs;
-    pairs = new ArrayList<Pair>();
+  static List<Object> getObjects() throws IOException {
+    getOrders();
+    return objects;
+  }
+
+  private static List<Object> getPairs() throws IOException {
+    File inFile = new File("pairs.data");
+    if(objects != null)
+      return objects;
+    objects = new ArrayList<Object>();
     BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(inFile)));
     String line;
     while((line = reader.readLine()) != null){
       String[] strs = line.split(" ");
       Pair p = new Pair(strs[0], Integer.parseInt(strs[1]));
       dataSize += strs[0].length() + 4;
-      pairs.add(p);
+      objects.add(p);
     }
     System.out.printf("dataSize:%,d\n", dataSize);
-    return pairs;
+    return objects;
+  }
+
+  public static List<Object> getOrders() {
+    if(objects == null) {
+      objects = new ArrayList<Object>();
+      try {
+        BufferedReader reader = new BufferedReader(new FileReader(new File("data/orders.tbl")));
+        String line;
+        while((line = reader.readLine()) != null) {
+          objects.add(new Order(line));
+        }
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return objects;
   }
 
   public static long getDataSize() {
     return dataSize;
   }
-
-//  static List<Pair> getPairs() throws FileNotFoundException {
-//    if(pairs != null)
-//      return pairs;
-//    Scanner in = new Scanner(inFile);
-//    Map<String, Integer> map = new HashMap<String, Integer>();
-//    while (in.hasNext()) {
-//      for (String str : in.nextLine().split("[^a-zA-Z]")) {
-//        str = str.toLowerCase();
-//        if(str.equals(""))
-//          continue;
-//        if (!map.containsKey(str)) {
-//          map.put(str, 1);
-//        } else {
-//          map.put(str, map.get(str) + 1);
-//        }
-//      }
-//    }
-//    in.close();
-//
-//    pairs = new LinkedList<Pair>();
-//    for (Entry<String, Integer> entry : map.entrySet()) {
-//      Pair p = new Pair(entry.getKey(), entry.getValue());
-//      pairs.add(p);
-//      dataSize += p.word.length() + 4;
-//    }
-//    System.out.printf("dataSize:%,d\n", dataSize);
-//    return pairs;
-//  }
-
-//  public static void main(String args[]) throws IOException {
-//    List<Pair> pairs = getPairs();
-//    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("pairs.data"))));
-//    for(Pair p : pairs)
-//      writer.write(p.word + " " + p.count + "\n");
-//    writer.flush();
-//    writer.close();
-//  }
 }

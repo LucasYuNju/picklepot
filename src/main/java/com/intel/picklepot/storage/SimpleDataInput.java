@@ -1,6 +1,7 @@
 package com.intel.picklepot.storage;
 
 import com.intel.picklepot.exception.PicklePotException;
+import com.intel.picklepot.metadata.Block;
 import com.intel.picklepot.metadata.ClassInfo;
 
 import java.io.IOException;
@@ -41,23 +42,17 @@ public class SimpleDataInput implements DataInput {
     }
   }
 
-  public void readObjects() throws PicklePotException, IOException, ClassNotFoundException {
+  public void readObjects() throws PicklePotException {
     if (in == null || fieldsByte == null) {
       throw new PicklePotException("DataInput not initialized.");
     }
     if (classInfo == null) {
-      classInfo = (ClassInfo) in.readObject();
-    }
-    int numField = classInfo.getFieldInfos().size();
-    for (int i = 0; i < numField; i++) {
       try {
-        byte[] fieldByte = (byte[]) in.readObject();
-        fieldsByte.add(fieldByte);
+        classInfo = (ClassInfo) in.readObject();
       } catch (Exception e) {
-        throw new PicklePotException("Error reading fields.", e);
+        e.printStackTrace();
       }
     }
-    close();
   }
 
   public ClassInfo getClassInfo() {
@@ -66,5 +61,15 @@ public class SimpleDataInput implements DataInput {
 
   public List<byte[]> getFieldsByte() {
     return fieldsByte;
+  }
+
+  public Block readBlock() {
+    Block block = null;
+    try {
+      block = (Block)in.readObject();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return block;
   }
 }

@@ -2,6 +2,7 @@ package com.intel.picklepot.perf;
 
 public abstract class Template {
   byte[] serialized;
+  byte[] compressed;
   String name;
   int repeations;
   long serialTimeNanos;
@@ -12,31 +13,37 @@ public abstract class Template {
     this.repeations = repeations;
   }
 
-  public void test() throws Exception {
-    serialTimeNanos = System.nanoTime();
-    for(int i=0; i<repeations; i++) {
-      serialize();
-    }
-    serialTimeNanos = (System.nanoTime() - serialTimeNanos) / repeations;
+  public void test() {
+    try {
+      serialTimeNanos = System.nanoTime();
+      for (int i = 0; i < repeations; i++) {
+        serialize();
+      }
+      serialTimeNanos = (System.nanoTime() - serialTimeNanos) / repeations;
 
-    deserialTimeNanos = System.nanoTime();
-    for(int i=0; i<repeations; i++) {
-      deserialize();
-    }
-    deserialTimeNanos = (System.nanoTime() - deserialTimeNanos) / repeations;
+      deserialTimeNanos = System.nanoTime();
+      for (int i = 0; i < repeations; i++) {
+        deserialize();
+      }
+      deserialTimeNanos = (System.nanoTime() - deserialTimeNanos) / repeations;
 
-    if(!verifyDeserialized()) {
-      System.err.println("deserialization fault");
+      if (!verifyDeserialized()) {
+        System.err.println("deserialization fault");
+      }
+    }
+    catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
   public void printStatistics() {
-    System.out.print(name + "\t");
-    System.out.printf("serialSize:%,d serialTime:%,dms serialSpeed:%,dMB/s deserialTime:%,dms, deserialSpeed:%,dMB\n",
-        getSerialiedSize(), serialTimeNanos / 1000000,
-            InputUtils.getDataSize() * 1000 / serialTimeNanos,
-            deserialTimeNanos / 1000000,
-            InputUtils.getDataSize() * 1000 / deserialTimeNanos);
+    System.out.printf("%-20s", name);
+//    System.out.printf("serialSize:%,d serialTime:%,dms serialSpeed:%,dMB/s deserialTime:%,dms, deserialSpeed:%,dMB\n",
+//        getSerialiedSize(), serialTimeNanos / 1000000,
+//            InputUtils.getDataSize() * 1000 / serialTimeNanos,
+//            deserialTimeNanos / 1000000,
+//            InputUtils.getDataSize() * 1000 / deserialTimeNanos);
+    System.out.printf("size:%,d time:%,d\n", compressed.length, serialTimeNanos/1000000);
   }
 
   private long getSerialiedSize() {
