@@ -46,13 +46,6 @@
           <artifactId>kryo</artifactId>
           <version>3.0.0</version>
       </dependency>
-      <dependency>
-          <groupId>org.xerial.snappy</groupId>
-          <artifactId>snappy-java</artifactId>
-          <version>1.1.1.6</version>
-          <type>jar</type>
-          <scope>compile</scope>
-      </dependency>
 
       <dependency>
           <groupId>com.twitter</groupId>
@@ -69,11 +62,7 @@
           <artifactId>parquet-column</artifactId>
           <version>1.6.0rc3</version>
       </dependency>
-      <dependency>
-          <groupId>com.twitter</groupId>
-          <artifactId>parquet-hadoop</artifactId>
-          <version>1.5.0</version>
-      </dependency>
+
 
       <dependency>
           <groupId>org.xerial.snappy</groupId>
