@@ -1,47 +1,47 @@
 package com.intel.picklepot.perf;
 
-import com.intel.picklepot.Pair;
 import com.intel.picklepot.PicklePotImpl;
 import com.intel.picklepot.storage.SimpleDataInput;
 import com.intel.picklepot.storage.SimpleDataOutput;
-import com.intel.picklepot.StopWatch;
+import org.xerial.snappy.Snappy;
 
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 
 public class PicklePotTest extends Template {
-  PicklePotImpl<Pair> picklePot;
-  Iterator deserialized;
+  PicklePotImpl<Object> picklePot;
+  Iterator restored;
+  List objects;
 
   public PicklePotTest(int repeations) {
-    super("picklepot", repeations);
+    super("picklepot+snappy", repeations);
   }
 
   @Override
   protected void serialize() throws Exception {
-    picklePot = new PicklePotImpl<Pair>();
+    picklePot = new PicklePotImpl<Object>();
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    picklePot.initialize(Pair.class, new SimpleDataOutput(outputStream), null);
-    List<Pair> pairs = InputUtils.getPairs();
-    picklePot.add(pairs.iterator());
+    objects = InputUtils.getObjects();
+    picklePot.initialize((Class)objects.get(0).getClass(), new SimpleDataOutput(outputStream), null);
+    picklePot.add(objects.iterator());
 
     picklePot.flush();
     serialized = outputStream.toByteArray();
+    compressed = Snappy.compress(serialized);
   }
 
   @Override
   protected void deserialize() throws Exception {
     SimpleDataInput dataInput = new SimpleDataInput();
     dataInput.initialize(new ByteArrayInputStream(serialized));
-    deserialized = picklePot.deserialize(dataInput);
+    restored = picklePot.deserialize(dataInput);
   }
 
   @Override
   protected boolean verifyDeserialized() throws Exception {
-    List<Pair> pairs = InputUtils.getPairs();
-    for(Pair p : pairs) {
-      if(!deserialized.hasNext() || !deserialized.next().equals(p))
+    for(Object p : objects) {
+      if(!restored.hasNext() || !restored.next().equals(p))
         return false;
     }
     return true;

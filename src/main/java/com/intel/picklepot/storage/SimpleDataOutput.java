@@ -1,6 +1,7 @@
 package com.intel.picklepot.storage;
 
 import com.intel.picklepot.exception.PicklePotException;
+import com.intel.picklepot.metadata.Block;
 import com.intel.picklepot.metadata.ClassInfo;
 
 import java.io.IOException;
@@ -42,7 +43,11 @@ public class SimpleDataOutput implements DataOutput {
 
   @Override
   public void writeBytes(byte[] bytes) {
-
+    try {
+      out.writeObject(bytes);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -58,6 +63,16 @@ public class SimpleDataOutput implements DataOutput {
   public void close() {
     try {
       out.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void writeBlock(Block dataBlock, Block dictBlock) {
+    try {
+      out.writeObject(dataBlock);
+      if(dictBlock != null)
+        out.writeObject(dictBlock);
     } catch (IOException e) {
       e.printStackTrace();
     }

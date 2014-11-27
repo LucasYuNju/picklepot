@@ -1,15 +1,15 @@
 package com.intel.picklepot.perf;
 
+import com.intel.picklepot.columnar.ColumnWriter;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 public class TestPerf {
-  static final int REPETITION = 4;
-  static final int WARNUP = 4;
-  static final int RUN= 5;
+  static final int REPETITION = 1;
+  static final int WARNUP = 0;
+  static final int RUN= 0;
 
   @Test
   public void test() throws Exception {
@@ -32,6 +32,20 @@ public class TestPerf {
         t.printStatistics();
       }
       System.gc();
+    }
+
+    PicklePotTest ppt = new PicklePotTest(REPETITION);
+    ColumnWriter.enableColumnStatics(true);
+    ppt.test();
+    ColumnWriter.enableColumnStatics(false);
+    System.gc();
+    System.out.println();
+
+    while(!tests.isEmpty()) {
+      Template t = tests.get(0);
+      t.test();
+      t.printStatistics();
+      tests.remove(t);
     }
   }
 }
