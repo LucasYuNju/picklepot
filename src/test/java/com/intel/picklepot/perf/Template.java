@@ -52,7 +52,7 @@ public abstract class Template {
 //            InputUtils.getDataSize() * 1000 / serialTimeNanos,
 //            deserialTimeNanos / 1000000,
 //            InputUtils.getDataSize() * 1000 / deserialTimeNanos);
-    System.out.printf("size:%,d serial time:%,dms deserial time:%,dms\n", compressed.length, serialTimeNanos/1000000, deserialTimeNanos/1000000);
+    System.out.printf("size:%,d code time:%,dms decode time:%,dms\n", compressed.length, serialTimeNanos/1000000, deserialTimeNanos/1000000);
     serialized = null;
     compressed = null;
     restored = null;
