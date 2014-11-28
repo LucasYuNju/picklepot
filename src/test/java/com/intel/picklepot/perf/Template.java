@@ -1,8 +1,11 @@
 package com.intel.picklepot.perf;
 
+import java.util.Iterator;
+
 public abstract class Template {
   byte[] serialized;
   byte[] compressed;
+  Iterator restored;
   String name;
   int repeations;
   long serialTimeNanos;
@@ -15,17 +18,23 @@ public abstract class Template {
 
   public void test() {
     try {
-      serialTimeNanos = System.nanoTime();
+      serialTimeNanos = 0;
       for (int i = 0; i < repeations; i++) {
+        long startTime = System.nanoTime();
         serialize();
+        serialTimeNanos += System.nanoTime() - startTime;
+        System.gc();
       }
-      serialTimeNanos = (System.nanoTime() - serialTimeNanos) / repeations;
+      serialTimeNanos /= repeations;
 
-      deserialTimeNanos = System.nanoTime();
+      deserialTimeNanos = 0;
       for (int i = 0; i < repeations; i++) {
+        long startTime = System.nanoTime();
         deserialize();
+        deserialTimeNanos += System.nanoTime() - startTime;
+        System.gc();
       }
-      deserialTimeNanos = (System.nanoTime() - deserialTimeNanos) / repeations;
+      deserialTimeNanos /= repeations;
 
       if (!verifyDeserialized()) {
         System.err.println("deserialization fault");
@@ -43,7 +52,10 @@ public abstract class Template {
 //            InputUtils.getDataSize() * 1000 / serialTimeNanos,
 //            deserialTimeNanos / 1000000,
 //            InputUtils.getDataSize() * 1000 / deserialTimeNanos);
-    System.out.printf("size:%,d time:%,d\n", compressed.length, serialTimeNanos/1000000);
+    System.out.printf("size:%,d serial time:%,dms deserial time:%,dms\n", compressed.length, serialTimeNanos/1000000, deserialTimeNanos/1000000);
+    serialized = null;
+    compressed = null;
+    restored = null;
   }
 
   private long getSerialiedSize() {
