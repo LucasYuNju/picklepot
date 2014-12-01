@@ -3,15 +3,16 @@
 #prepare data
 if [ ! -f "data/orders.tbl" ]
 then
+    TPCH="tpch-dbgen"
     echo "\nPreparing data"
-    rm -rf tpch-dbgen
+    rm -rf $TPCH
     git clone https://github.com/electrum/tpch-dbgen.git
-    cd tpch-dbgen
+    cd $TPCH
     make -s 2>>logs
     ./dbgen -s 1
     cd ..
     mkdir data
-    cp tpch-dbgen/orders.tbl data/
+    mv $TPCH/orders.tbl data/
 fi
 
 #build and test
