@@ -8,10 +8,11 @@ cd tpch-dbgen
 make -s 2>>logs
 ./dbgen -s 1
 cd ..
+mkdir data
 cp tpch-dbgen/orders.tbl data/
 
 #build and test
-export MAVEN_OPTS="-Xms1g -Xmx4g"
+export MAVEN_OPTS="-Xms1024m -Xmx4096m"
 BUILD_COMMAND="mvn -Dtest=TestPerf test"
 echo "\nTesting with..."
 echo "\$ $BUILD_COMMAND\n"
