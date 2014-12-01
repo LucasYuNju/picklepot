@@ -8,7 +8,7 @@ cd tpch-dbgen
 make -s 2>>logs
 ./dbgen -s 1
 cd ..
-cp tpch-dbgen/orders.tbl data 
+cp tpch-dbgen/orders.tbl data/
 
 #build and test
 export MAVEN_OPTS="-Xms1g -Xmx4g"
