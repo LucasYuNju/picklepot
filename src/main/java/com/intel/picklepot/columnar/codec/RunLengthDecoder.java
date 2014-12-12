@@ -1,7 +1,8 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
-import com.intel.picklepot.columnar.runlength.InStream;
-import com.intel.picklepot.columnar.runlength.RunLengthIntegerReader;
+import com.intel.picklepot.columnar.codec.Decoder;
+import com.intel.picklepot.columnar.codec.runlength.InStream;
+import com.intel.picklepot.columnar.codec.runlength.RunLengthIntegerReader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

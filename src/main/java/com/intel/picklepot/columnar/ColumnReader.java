@@ -11,23 +11,28 @@ import parquet.column.values.ValuesReader;
 import parquet.schema.PrimitiveType;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class ColumnReader {
   private ValuesReader valuesReader;
   private Block dataBlock;
   private Class columnClass;
   private int numRead;
+  private ObjectInputStream ois;
 
   //parquet.column.Encoding will find compatible ValuesReader
   public ColumnReader(Block dataBlock, Block dictBlock, Class columnClass) throws IOException {
     this.dataBlock = dataBlock;
     this.columnClass = columnClass;
-    ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {"foo"}, getPrimitiveTypeName(columnClass), 0, 0);
+    ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {""}, getPrimitiveTypeName(columnClass), 0, 0);
     Encoding encoding = dataBlock.getEncoding();
-    if(dataBlock.getEncoding().usesDictionary()) {
+    if(dataBlock.getEncoding() == Encoding.BIT_PACKED) {
+      valuesReader = new ObjectValuesReader();
+    }
+    else if(dataBlock.getEncoding().usesDictionary()) {
       DictionaryPage dictPage = new DictionaryPage(BytesInput.from(dictBlock.getBytes()), dictBlock.getBytes().length, dictBlock.getNumValues(), dictBlock.getEncoding());
       Dictionary dict = encoding.initDictionary(descriptor, dictPage);
-      this.valuesReader = dataBlock.getEncoding().getDictionaryBasedValuesReader(descriptor, ValuesType.VALUES, dict);
+      this.valuesReader = encoding.getDictionaryBasedValuesReader(descriptor, ValuesType.VALUES, dict);
     }
     else {
       this.valuesReader = encoding.getValuesReader(descriptor, ValuesType.VALUES);
@@ -41,7 +46,10 @@ public class ColumnReader {
     numRead++;
     if(columnClass == String.class)
       return new String(valuesReader.readBytes().getBytes());
-    return valuesReader.readInteger();
+    else if(columnClass == Integer.class || columnClass == int.class) {
+      return valuesReader.readInteger();
+    }
+    return ((ObjectValuesReader)valuesReader).readObject();
   }
 
   public boolean hasNext() {

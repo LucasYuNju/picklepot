@@ -25,20 +25,28 @@ public class SimpleDataOutput implements DataOutput {
    * @param classInfo
    * @throws IOException
    */
-  public void writeClassInfo(ClassInfo classInfo) throws IOException {
+  public void writeClassInfo(ClassInfo classInfo) {
       numWrittenArray = 0;
       arrayLimit = classInfo.getFieldInfos().size();
+    try {
       out.writeObject(classInfo);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
    * write bytes to internal storage.
    * @param bytes
    */
-  public void writeFieldByte(byte[] bytes) throws IOException, PicklePotException {
+  public void writeFieldByte(byte[] bytes) throws PicklePotException {
       if(++numWrittenArray > arrayLimit)
-          throw  new PicklePotException("try to write more byte array than the number of class field");
+          throw new PicklePotException("try to write more byte array than the number of class field");
+    try {
       out.writeObject(bytes);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override

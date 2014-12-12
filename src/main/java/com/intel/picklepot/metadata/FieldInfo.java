@@ -16,14 +16,7 @@ public class FieldInfo implements Serializable {
     return fieldName;
   }
 
-  public Type getFieldType() {
-    return fieldType;
-  }
-
   public Class getFieldClass() {
-    String className = fieldType.toString().replace("class", "").trim();
-    if(className.equals(String.class.getName()))
-      return String.class;
-    return Integer.class;
+    return (Class) fieldType;
   }
 }

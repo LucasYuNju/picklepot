@@ -1,4 +1,4 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,6 +1,5 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.*;

@@ -1,7 +1,8 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
 import com.intel.picklepot.StopWatch;
-import com.intel.picklepot.columnar.runlength.RunLengthIntegerWriter;
+import com.intel.picklepot.columnar.codec.Encoder;
+import com.intel.picklepot.columnar.codec.runlength.RunLengthIntegerWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

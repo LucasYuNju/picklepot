@@ -1,4 +1,4 @@
-package com.intel.picklepot.columnar.runlength;
+package com.intel.picklepot.columnar.codec.runlength;
 
 public class RunLengthConstants {
 

@@ -1,8 +1,8 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
+import com.intel.picklepot.columnar.codec.Bytes;
+import com.intel.picklepot.columnar.codec.Decoder;
 import net.jpountz.lz4.LZ4BlockInputStream;
-import net.jpountz.lz4.LZ4Factory;
-import net.jpountz.lz4.LZ4SafeDecompressor;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

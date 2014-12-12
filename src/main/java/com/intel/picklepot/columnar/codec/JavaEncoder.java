@@ -1,4 +1,6 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
+
+import com.intel.picklepot.columnar.codec.Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,7 +12,7 @@ import java.util.Iterator;
  * This is an alternative to encode non-integer and non-string fields.
  * @param <T>
  */
-public class JavaEncoder<T> implements Encoder<T>{
+public class JavaEncoder<T> implements Encoder<T> {
   private ByteArrayOutputStream baos = new ByteArrayOutputStream();
   private ObjectOutputStream oos;
 

@@ -1,5 +1,5 @@
 
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
 import java.io.OutputStream;
 import java.util.Iterator;

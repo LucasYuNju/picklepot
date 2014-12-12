@@ -113,19 +113,16 @@ public class PicklePotImpl<T> implements PicklePot<T>{
    */
   public void flush() throws PicklePotException {
     SimpleDataOutput dataOutput = (SimpleDataOutput) this.dataOutput;
-    try {
-      dataOutput.writeClassInfo(instancePot.getClassInfo());
-    } catch (IOException e) {
-      throw new PicklePotException();
-    }
+    dataOutput.writeClassInfo(instancePot.getClassInfo());
     Iterator<FieldInfo> fieldInfos = instancePot.getClassInfo().getFieldInfos().values().iterator();
-    ColumnWriter.resetWriters();
+
+    PicklePotProperties properties = new PicklePotProperties(true, 256 * 1024, 512 * 1024);
     while(fieldInfos.hasNext()) {
       FieldInfo curFieldInfo = fieldInfos.next();
+//      ColumnWriter columnWriter = new ColumnWriter(curFieldInfo.getFieldClass(), dataOutput);
+      ColumnWriter columnWriter = properties.getColumnWriter(curFieldInfo.getFieldClass(), dataOutput);
       List<?> list = instancePot.getFieldValues(curFieldInfo.getFieldName());
       Iterator iterator = list.iterator();
-
-      ColumnWriter columnWriter = new ColumnWriter(curFieldInfo.getFieldClass(), dataOutput);
       while(iterator.hasNext()) {
         columnWriter.write(iterator.next());
       }

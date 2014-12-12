@@ -1,6 +1,5 @@
-package com.intel.picklepot.columnar.runlength;
+package com.intel.picklepot.columnar.codec.runlength;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 

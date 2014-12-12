@@ -1,14 +1,13 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class JavaDecoder<T> implements Decoder<T>{
+public class JavaDecoder<T> implements Decoder<T> {
   @Override
   public Iterator<T> decode(byte[] bytes, String className) {
     List<T> values = new LinkedList<T>();

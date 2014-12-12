@@ -1,4 +1,4 @@
-package com.intel.picklepot.columnar;
+package com.intel.picklepot.columnar.codec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,9 +7,9 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import com.intel.picklepot.StopWatch;
+import com.intel.picklepot.columnar.codec.Bytes;
+import com.intel.picklepot.columnar.codec.Encoder;
 import net.jpountz.lz4.LZ4BlockOutputStream;
-import net.jpountz.lz4.LZ4Compressor;
-import net.jpountz.lz4.LZ4Factory;
 
 public class LZ4Encoder<T> implements Encoder<T> {
   private OutputStream os;
