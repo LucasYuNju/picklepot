@@ -8,7 +8,7 @@ then
     rm -rf $TPCH
     git clone https://github.com/electrum/tpch-dbgen.git
     cd $TPCH
-    make -s 2>>logs
+    make -s 2>>/dev/null
     ./dbgen -s 1
     cd ..
     mkdir data
