@@ -27,6 +27,7 @@ public class PicklePotTest extends Template {
     picklePot.add(objects.iterator());
 
     picklePot.flush();
+    picklePot.close();
     serialized = outputStream.toByteArray();
     compressed = Snappy.compress(serialized);
   }

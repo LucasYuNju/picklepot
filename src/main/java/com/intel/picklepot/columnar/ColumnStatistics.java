@@ -43,6 +43,8 @@ public class ColumnStatistics {
   }
 
   public void print(Block dataBlock, Block dictBlock) {
+    if(!enabled)
+      return;
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectOutputStream oos = new ObjectOutputStream(baos);

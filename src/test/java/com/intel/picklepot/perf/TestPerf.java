@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TestPerf {
-  static final int REPETITION = 3;
+  static final int REPETITION = 1;
   static final int WARNUP = 1;
-  static final int RUN= 2;
+  static final int RUN= 1;
 
   @Test
   public void test() throws Exception {
