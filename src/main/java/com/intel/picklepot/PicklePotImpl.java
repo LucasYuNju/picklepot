@@ -13,6 +13,8 @@ import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -53,7 +55,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
     StopWatch.start();
     while(ite.hasNext()) {
-      Object obj = ite.next();
+      T obj = ite.next();
       this.instancePot.addObjectValue(obj);
       count++;
     }
@@ -78,6 +80,8 @@ public class PicklePotImpl<T> implements PicklePot<T>{
       }
     }
 
+    logReaders(readers);
+
     Class<T> clazz = dataInput.getClassInfo().getClassIns();
     Field[] fields = clazz.getDeclaredFields();
     for(Field field : fields) {
@@ -86,7 +90,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     Objenesis objenesis = new ObjenesisStd();
     ObjectInstantiator instantiator = objenesis.getInstantiatorOf(clazz);
     List<T> result = new LinkedList<T>();
-    if(!InstancePot.isUnsupportedInstance(clazz)) {
+    if(!dataInput.getClassInfo().isSerializedWithJava()) {
       while(!readers.isEmpty() && readers.get(0).hasNext()) {
         try {
           T object = (T) instantiator.newInstance();
@@ -106,6 +110,21 @@ public class PicklePotImpl<T> implements PicklePot<T>{
       }
     }
     return result.iterator();
+  }
+
+  private void logReaders(List<ColumnReader> readers) {
+    try {
+      BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/picklepot_encoding", true));
+      writer.newLine();
+      for(ColumnReader reader : readers) {
+        writer.write("Encoding:" + reader.getEncoding().toString() + " Class:" + reader.getColumnClass());
+        writer.newLine();
+      }
+      writer.flush();
+      writer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**

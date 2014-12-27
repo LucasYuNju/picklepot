@@ -61,4 +61,12 @@ public class ColumnReader {
       return PrimitiveType.PrimitiveTypeName.BINARY;
     return PrimitiveType.PrimitiveTypeName.INT32;
   }
+
+  public Encoding getEncoding() {
+    return dataBlock.getEncoding();
+  }
+
+  public Class getColumnClass() {
+    return columnClass;
+  }
 }

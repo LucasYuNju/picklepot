@@ -1,14 +1,13 @@
 package com.intel.picklepot.metadata;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class ClassInfo<T> implements Serializable {
   private Class<T> classIns;
   private Map<String, FieldInfo> fieldInfos = new LinkedHashMap<String, FieldInfo>();
+  private boolean useJava = false;
 
   public ClassInfo(Class<T> aClass) {
     this.classIns = aClass;
@@ -28,5 +27,13 @@ public class ClassInfo<T> implements Serializable {
 
   public Class<T> getClassIns() {
     return classIns;
+  }
+
+  public void serializWithJava() {
+    useJava = true;
+  }
+
+  public boolean isSerializedWithJava() {
+    return useJava;
   }
 }

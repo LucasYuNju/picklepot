@@ -2,6 +2,7 @@ package com.intel.picklepot.perf;
 
 import com.intel.picklepot.Pair;
 import com.intel.picklepot.Order;
+import scala.Tuple2;
 
 import java.io.*;
 import java.util.*;
@@ -11,7 +12,8 @@ public class InputUtils {
   private static long dataSize;
 
   static List<Object> getObjects() throws IOException {
-    getOrders();
+//    getOrders();
+    getTuples();
     return objects;
   }
 
@@ -47,6 +49,14 @@ public class InputUtils {
         e.printStackTrace();
       }
     }
+    return objects;
+  }
+
+  public static List<Object> getTuples() {
+    if(objects == null) {
+      objects = new ArrayList<Object>();
+    }
+    objects.add(new Tuple2("1", "1"));
     return objects;
   }
 

@@ -13,19 +13,22 @@ import java.util.Map;
 public class InstancePot<T> {
 
   private ClassInfo<T> classInfo;
-  private ObjectInspector inspector;
+  private ObjectInspector<Object> inspector;
   private Map<String, List<?>> fieldsMap = new HashMap<String, List<?>>();
   private List<List<?>> fieldsList = new LinkedList<List<?>>();
   private boolean isUnsuppoted = false;
+  private boolean initialized = false;
+
 
   public InstancePot(Class<T> aClass) {
-    this.classInfo = initiate(aClass);
-    this.inspector = new SimpleObjectInspector(aClass);
+//    this.classInfo = initiate(aClass);
+//    this.inspector = new SimpleObjectInspector(aClass);
   }
 
-  private ClassInfo<T> initiate(Class<T> aClass) {
+  private ClassInfo<T> initiate(Class<T> aClass, Object t) {
     classInfo = new ClassInfo<T>(aClass);
-    if(isUnsupportedInstance(aClass)) {
+    if(isUnsupportedInstance(aClass, t)) {
+      classInfo.serializWithJava();
       isUnsuppoted = true;
       FieldInfo fieldInfo = new FieldInfo(aClass.getName(), aClass);
       classInfo.putFieldInfo(fieldInfo);
@@ -36,7 +39,17 @@ public class InstancePot<T> {
     }
     Field[] fields = aClass.getDeclaredFields();
     for (Field field : fields) {
-      Class<?> fieldType = field.getType();
+      Class<?> fieldType = null;
+
+      boolean accessible = field.isAccessible();
+      field.setAccessible(true);
+      try {
+        fieldType = field.get(t).getClass();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      }
+      field.setAccessible(accessible);
+
       FieldInfo fieldInfo = new FieldInfo(field.getName(), fieldType);
       classInfo.putFieldInfo(fieldInfo);
       if (fieldType.equals(String.class)) {
@@ -57,7 +70,12 @@ public class InstancePot<T> {
     return classInfo;
   }
 
-  public void addObjectValue(Object obj) throws PicklePotException {
+  public void addObjectValue(T obj) throws PicklePotException {
+    if(!initialized) {
+      this.classInfo = initiate((Class<T>)obj.getClass(), obj);
+      this.inspector = new SimpleObjectInspector(obj.getClass());
+      initialized = true;
+    }
     if(isUnsuppoted) {
       List<Object> list = (List<Object>) fieldsList.get(0);
       list.add(obj);
@@ -65,7 +83,8 @@ public class InstancePot<T> {
     else {
       // add field value into value list directly, as fields order in inspector should be same as
       // fieldsList order.
-      this.inspector.inspect(obj, fieldsList);
+      List lists = fieldsList;
+      this.inspector.inspect(obj, lists);
     }
   }
 
@@ -81,17 +100,24 @@ public class InstancePot<T> {
    * @param aClass class of instance
    * @return whether aClass is an ArrayClass or contains unsupported fields(non-string & non-integer)
    */
-  public static boolean isUnsupportedInstance(Class aClass) {
+  public static boolean isUnsupportedInstance(Class aClass, Object obj) {
     Field[] fields = aClass.getDeclaredFields();
     if(aClass.isArray())
       return true;
     for (Field field : fields) {
-      Class<?> fieldType = field.getType();
-      if(!fieldType.equals(String.class)
-          && !fieldType.equals(Integer.class)
-          && !fieldType.equals(Integer.TYPE)) {
-        return true;
+      boolean accessible = field.isAccessible();
+      field.setAccessible(true);
+      try {
+        Class<?> fieldType = field.get(obj).getClass();
+        if(!fieldType.equals(String.class)
+            && !fieldType.equals(Integer.class)
+            && !fieldType.equals(Integer.TYPE)) {
+          return true;
+        }
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
       }
+      field.setAccessible(accessible);
     }
     return false;
   }
