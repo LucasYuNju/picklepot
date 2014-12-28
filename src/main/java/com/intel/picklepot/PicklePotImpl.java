@@ -142,7 +142,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     dataOutput.writeClassInfo(instancePot.getClassInfo());
     Iterator<FieldInfo> fieldInfos = instancePot.getClassInfo().getFieldInfos().values().iterator();
 
-    PicklePotProperties properties = new PicklePotProperties(true, 256 * 1024, 512 * 1024);
+    PicklePotProperties properties = new PicklePotProperties(true, 10 * 1024 * 1024, 1024 * 1024);
     while(fieldInfos.hasNext()) {
       FieldInfo curFieldInfo = fieldInfos.next();
       ColumnWriter columnWriter = properties.getColumnWriter(curFieldInfo.getFieldClass(), dataOutput);
