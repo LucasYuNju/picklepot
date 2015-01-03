@@ -99,6 +99,9 @@ public class InstancePot<T> {
   /**
    * @param aClass class of instance
    * @return whether aClass is an ArrayClass or contains unsupported fields(non-string & non-integer)
+   * return true when aClass=String, so that ColumnWriter can compress objects as a single column
+   * 
+   * TODO improper method name
    */
   public static boolean isUnsupportedInstance(Class aClass, Object obj) {
     Field[] fields = aClass.getDeclaredFields();
