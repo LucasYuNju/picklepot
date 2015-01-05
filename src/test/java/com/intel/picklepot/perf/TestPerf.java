@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TestPerf {
   static final int REPETITION = 1;
-  static final int WARNUP = 1;
+  static final int WARNUP = 0;
   static final int RUN= 1;
 
   @Test

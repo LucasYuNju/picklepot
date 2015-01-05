@@ -131,14 +131,12 @@ public class PicklePotImpl<T> implements PicklePot<T>{
    * do the compression work and flush to DataOutput.
    */
   public void flush() throws PicklePotException {
-    //do nothing
-  }
-
-  /**
-   * current implementation do not allow multiple flush. PicklePotImpl flush only once when it is closed
-   */
-  public void close() throws PicklePotException{
     SimpleDataOutput dataOutput = (SimpleDataOutput) this.dataOutput;
+    try {
+      dataOutput.initialize();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     dataOutput.writeClassInfo(instancePot.getClassInfo());
     Iterator<FieldInfo> fieldInfos = instancePot.getClassInfo().getFieldInfos().values().iterator();
 
@@ -153,6 +151,13 @@ public class PicklePotImpl<T> implements PicklePot<T>{
       }
       columnWriter.flush();
     }
+  }
+
+  /**
+   * current implementation do not allow multiple flush. PicklePotImpl flush only once when it is closed
+   */
+  public void close() throws PicklePotException{
+//    SimpleDataOutput dataOutput = (SimpleDataOutput) this.dataOutput;
     dataOutput.close();
   }
 

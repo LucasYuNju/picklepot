@@ -13,11 +13,20 @@ import java.io.OutputStream;
  */
 public class SimpleDataOutput implements DataOutput {
   ObjectOutputStream out;
+  OutputStream os;
   int numWrittenArray;
   int arrayLimit;
 
-  public SimpleDataOutput(OutputStream outputStream) throws IOException {
-    out = new ObjectOutputStream(outputStream);
+  public SimpleDataOutput(OutputStream outputStream) {
+    this.os = outputStream;
+  }
+
+  /**
+   * @throws IOException
+   * TODO
+   */
+  public void initialize() throws IOException{
+    out = new ObjectOutputStream(os);
   }
 
   /**
@@ -76,6 +85,12 @@ public class SimpleDataOutput implements DataOutput {
     }
   }
 
+  /**
+   * @param dataBlock
+   * @param dictBlock
+   * TODO
+   * should throw PicklePotException to let user know there are problems with ObjectOutputStream
+   */
   public void writeBlock(Block dataBlock, Block dictBlock) {
     try {
       out.writeObject(dataBlock);
