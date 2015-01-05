@@ -4,7 +4,7 @@
 if [ ! -f "data/orders.tbl" ]
 then
     TPCH="tpch-dbgen"
-    echo "\nPreparing data"
+    echo -e "\nPreparing data"
     rm -rf $TPCH
     git clone https://github.com/electrum/tpch-dbgen.git
     cd $TPCH
