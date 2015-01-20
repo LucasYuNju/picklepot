@@ -53,13 +53,11 @@ public class PicklePotImpl<T> implements PicklePot<T>{
       return count;
     }
 
-    StopWatch.start();
     while(ite.hasNext()) {
       T obj = ite.next();
       this.instancePot.addObjectValue(obj);
       count++;
     }
-    StopWatch.stop("InstancePot.addObjectValue");
 
     return count;
   }

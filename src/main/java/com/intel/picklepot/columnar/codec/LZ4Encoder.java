@@ -6,9 +6,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
-import com.intel.picklepot.StopWatch;
-import com.intel.picklepot.columnar.codec.Bytes;
-import com.intel.picklepot.columnar.codec.Encoder;
 import net.jpountz.lz4.LZ4BlockOutputStream;
 
 public class LZ4Encoder<T> implements Encoder<T> {
@@ -25,7 +22,6 @@ public class LZ4Encoder<T> implements Encoder<T> {
   @Override
   public void encode(Iterator<T> values, int num) {
     int originalSize = 0;
-    StopWatch.start();
     os = new ByteArrayOutputStream();
     Iterator<String> strs = (Iterator<String>) values;
     try {
@@ -46,7 +42,7 @@ public class LZ4Encoder<T> implements Encoder<T> {
       System.out.println("original:" + originalSize);
       System.out.println("compressed:" + ((ByteArrayOutputStream)os).toByteArray().length);
     }
-    StopWatch.stop("compress string");  }
+  }
 
   @Override
   public void encode(Object value) {
