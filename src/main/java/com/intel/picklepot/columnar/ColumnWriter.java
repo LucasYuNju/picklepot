@@ -37,7 +37,7 @@ public class ColumnWriter {
     }
   }
 
-  public void flush() {
+  public void writeToBlock() {
     try {
       byte[] bytes = valuesWriter.getBytes().toByteArray();
       Block dictBlock = null;

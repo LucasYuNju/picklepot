@@ -149,7 +149,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
       while(iterator.hasNext()) {
         columnWriter.write(iterator.next());
       }
-      columnWriter.flush();
+      columnWriter.writeToBlock();
     }
   }
 
