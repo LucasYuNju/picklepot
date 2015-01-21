@@ -2,9 +2,9 @@ package com.intel.picklepot.unsafe;
 
 import com.intel.picklepot.columnar.Utils;
 
-public class UnsafeStringField extends UnsafeField{
+public class UnsafeUnsupportedField extends UnsafeField {
 
-  public UnsafeStringField(Class clazz, long offset, NewPicklePotImpl picklepot) {
+  public UnsafeUnsupportedField(Class clazz, long offset, NewPicklePotImpl picklepot) {
     super(clazz, offset, picklepot);
   }
 
@@ -13,8 +13,8 @@ public class UnsafeStringField extends UnsafeField{
     if(writer == null) {
       writer = Utils.getColumnWriter(clazz, picklePot.getOutput());
     }
-    String strVal = (String) Utils.getUnsafe().getObject(object, offset);
-    writer.write(strVal);
+    Object writeVal = Utils.getUnsafe().getObject(object, offset);
+    writer.write(writeVal);
   }
 
   @Override
@@ -22,8 +22,7 @@ public class UnsafeStringField extends UnsafeField{
     if(reader == null) {
       reader = Utils.getColumnReader(clazz, picklePot.getInput());
     }
-    String strVal = (String) reader.read();
-    Utils.getUnsafe().putObject(object, offset, strVal);
+    Utils.getUnsafe().putObject(object, offset, reader.read());
     return object;
   }
 }

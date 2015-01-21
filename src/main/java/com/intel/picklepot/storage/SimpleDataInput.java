@@ -3,6 +3,7 @@ package com.intel.picklepot.storage;
 import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.metadata.Block;
 import com.intel.picklepot.metadata.ClassInfo;
+import com.intel.picklepot.unsafe.FieldGroup;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,5 +72,17 @@ public class SimpleDataInput implements DataInput {
       e.printStackTrace();
     }
     return block;
+  }
+
+  public FieldGroup readFieldGroup() {
+    FieldGroup ret = null;
+    try {
+      ret = (FieldGroup) in.readObject();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+    return ret;
   }
 }

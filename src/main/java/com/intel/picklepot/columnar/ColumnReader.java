@@ -30,7 +30,8 @@ public class ColumnReader {
       valuesReader = new ObjectValuesReader();
     }
     else if(dataBlock.getEncoding().usesDictionary()) {
-      DictionaryPage dictPage = new DictionaryPage(BytesInput.from(dictBlock.getBytes()), dictBlock.getBytes().length, dictBlock.getNumValues(), dictBlock.getEncoding());
+      DictionaryPage dictPage = new DictionaryPage(BytesInput.from(dictBlock.getBytes()),
+          dictBlock.getBytes().length, dictBlock.getNumValues(), dictBlock.getEncoding());
       Dictionary dict = encoding.initDictionary(descriptor, dictPage);
       this.valuesReader = encoding.getDictionaryBasedValuesReader(descriptor, ValuesType.VALUES, dict);
     }

@@ -1,6 +1,7 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.columnar.*;
+import com.intel.picklepot.columnar.Utils;
 import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.metadata.Block;
 import com.intel.picklepot.metadata.FieldInfo;
@@ -130,18 +131,13 @@ public class PicklePotImpl<T> implements PicklePot<T>{
    */
   public void flush() throws PicklePotException {
     SimpleDataOutput dataOutput = (SimpleDataOutput) this.dataOutput;
-    try {
-      dataOutput.initialize();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    dataOutput.initialize();
     dataOutput.writeClassInfo(instancePot.getClassInfo());
     Iterator<FieldInfo> fieldInfos = instancePot.getClassInfo().getFieldInfos().values().iterator();
 
-    PicklePotProperties properties = new PicklePotProperties(true, 10 * 1024 * 1024, 1024 * 1024);
     while(fieldInfos.hasNext()) {
       FieldInfo curFieldInfo = fieldInfos.next();
-      ColumnWriter columnWriter = properties.getColumnWriter(curFieldInfo.getFieldClass(), dataOutput);
+      ColumnWriter columnWriter = Utils.getColumnWriter(curFieldInfo.getFieldClass(), dataOutput);
       List<?> list = instancePot.getFieldValues(curFieldInfo.getFieldName());
       Iterator iterator = list.iterator();
       while(iterator.hasNext()) {
@@ -155,7 +151,6 @@ public class PicklePotImpl<T> implements PicklePot<T>{
    * current implementation do not allow multiple flush. PicklePotImpl flush only once when it is closed
    */
   public void close() throws PicklePotException{
-//    SimpleDataOutput dataOutput = (SimpleDataOutput) this.dataOutput;
     dataOutput.close();
   }
 
