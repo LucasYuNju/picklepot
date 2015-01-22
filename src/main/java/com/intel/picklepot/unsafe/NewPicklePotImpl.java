@@ -29,6 +29,10 @@ public class NewPicklePotImpl<T> implements PicklePot<T>{
   public NewPicklePotImpl(InputStream is) {
     input = new SimpleDataInput();
     input.initialize(is);
+    fieldGroup = input.readFieldGroup();
+    count = fieldGroup.getNumVals();
+    fieldGroup.setPicklePot(this);
+    instantiator = new ObjenesisStd().getInstantiatorOf(fieldGroup.getClazz());
   }
 
   @Override
@@ -71,12 +75,6 @@ public class NewPicklePotImpl<T> implements PicklePot<T>{
 
   @Override
   public T deserialize() throws PicklePotException{
-    if(fieldGroup == null) {
-      fieldGroup = input.readFieldGroup();
-      count = fieldGroup.getNumVals();
-      fieldGroup.setPicklePot(this);
-      instantiator = new ObjenesisStd().getInstantiatorOf(fieldGroup.getClazz());
-    }
     if(count-- < 0) {
       return null;
     }
