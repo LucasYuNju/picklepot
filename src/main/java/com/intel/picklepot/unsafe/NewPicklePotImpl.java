@@ -46,7 +46,7 @@ public class NewPicklePotImpl<T> implements PicklePot<T>{
       throw new PicklePotException("Null object added");
     }
     if(fieldGroup == null) {
-      this.fieldGroup = new FieldGroup(obj, this);
+      fieldGroup = new FieldGroup(obj, this);
     }
     fieldGroup.write(obj);
     return ++count;
@@ -95,6 +95,11 @@ public class NewPicklePotImpl<T> implements PicklePot<T>{
 
   public boolean hasNext() {
     return count > 0;
+  }
+
+  Object instantiate(Class clazz) {
+    ObjectInstantiator inst = new ObjenesisStd().getInstantiatorOf(clazz);
+    return inst.newInstance();
   }
 
   SimpleDataInput getInput() {
