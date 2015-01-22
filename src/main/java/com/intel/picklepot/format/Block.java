@@ -1,4 +1,4 @@
-package com.intel.picklepot.metadata;
+package com.intel.picklepot.format;
 
 import parquet.column.Encoding;
 

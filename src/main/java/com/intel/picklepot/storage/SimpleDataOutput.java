@@ -1,8 +1,9 @@
 package com.intel.picklepot.storage;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.metadata.Block;
+import com.intel.picklepot.format.Block;
 import com.intel.picklepot.metadata.ClassInfo;
+import com.intel.picklepot.unsafe.FieldGroup;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -25,8 +26,12 @@ public class SimpleDataOutput implements DataOutput {
    * @throws IOException
    * TODO
    */
-  public void initialize() throws IOException{
-    out = new ObjectOutputStream(os);
+  public void initialize() {
+    try {
+      out = new ObjectOutputStream(os);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -96,6 +101,14 @@ public class SimpleDataOutput implements DataOutput {
       out.writeObject(dataBlock);
       if(dictBlock != null)
         out.writeObject(dictBlock);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void writeFieldGroup(FieldGroup fieldGroup) {
+    try {
+      out.writeObject(fieldGroup);
     } catch (IOException e) {
       e.printStackTrace();
     }

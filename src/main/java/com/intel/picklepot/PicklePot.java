@@ -37,7 +37,25 @@ public interface PicklePot<T> {
   /**
    * deserialize an object from input.
    * @param input
-   * @return
+   * @return iterator of deserialized objects
+   * @throws java.lang.UnsupportedOperationException
    */
   public Iterator<T> deserialize(DataInput input) throws PicklePotException;
+
+  /**
+   * @return null if there is no object left
+   * @throws PicklePotException
+   * @throws java.lang.UnsupportedOperationException
+   */
+  public T deserialize() throws PicklePotException;
+
+  /**
+   * code columns and flush to DataOutput.
+   */
+  public void flush() throws PicklePotException;
+
+  /**
+   * close stream
+   */
+  public void close();
 }

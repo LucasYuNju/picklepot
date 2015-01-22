@@ -12,8 +12,8 @@ public class InputUtils {
   private static long dataSize;
 
   static List<Object> getObjects() throws IOException {
-//    getOrders();
-    getTuples();
+    getOrders();
+//    getTuples();
     return objects;
   }
 

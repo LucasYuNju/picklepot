@@ -1,7 +1,6 @@
 package com.intel.picklepot.columnar;
 
-import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.metadata.Block;
+import com.intel.picklepot.format.Block;
 import org.xerial.snappy.Snappy;
 
 import java.io.ByteArrayOutputStream;
@@ -26,7 +25,7 @@ public class ColumnStatistics {
     }
   }
 
-  public void add(Object value) throws PicklePotException {
+  public void add(Object value) {
     if(!enabled)
       return;
     try {
@@ -35,7 +34,7 @@ public class ColumnStatistics {
       } else if(value.getClass().equals(Integer.class) || value.getClass().equals(int.class)){
         rawDataStream.write(ByteBuffer.allocate(4).putInt((Integer) value).array());
       } else {
-        throw new PicklePotException("unable to write plain value of " + value.getClass());
+        throw new IllegalArgumentException("unable to write plain value of " + value.getClass());
       }
     } catch (IOException e) {
       e.printStackTrace();
