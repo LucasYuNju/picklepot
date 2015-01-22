@@ -1,7 +1,6 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.unsafe.NewPicklePotImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

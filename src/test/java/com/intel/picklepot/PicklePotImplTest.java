@@ -1,8 +1,8 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.metadata.ClassInfo;
-import com.intel.picklepot.serialization.InstancePot;
+import com.intel.picklepot.columnar.legacy.metadata.ClassInfo;
+import com.intel.picklepot.columnar.legacy.serialization.InstancePot;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 

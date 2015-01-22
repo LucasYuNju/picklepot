@@ -1,8 +1,8 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.storage.DataInput;
-import com.intel.picklepot.storage.DataOutput;
+import com.intel.picklepot.io.DataInput;
+import com.intel.picklepot.io.DataOutput;
 
 import java.util.Iterator;
 import java.util.Map;

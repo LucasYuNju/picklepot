@@ -2,8 +2,8 @@ package com.intel.picklepot.columnar;
 
 import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.format.Block;
-import com.intel.picklepot.storage.SimpleDataOutput;
-import com.intel.picklepot.unsafe.FieldType;
+import com.intel.picklepot.io.SimpleDataOutput;
+import com.intel.picklepot.serialization.FieldType;
 import parquet.column.page.DictionaryPage;
 import parquet.column.values.ValuesWriter;
 import parquet.io.api.Binary;

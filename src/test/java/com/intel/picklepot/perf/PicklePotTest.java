@@ -1,8 +1,8 @@
 package com.intel.picklepot.perf;
 
 import com.intel.picklepot.PicklePotImpl;
-import com.intel.picklepot.storage.SimpleDataInput;
-import com.intel.picklepot.storage.SimpleDataOutput;
+import com.intel.picklepot.io.SimpleDataInput;
+import com.intel.picklepot.io.SimpleDataOutput;
 import org.xerial.snappy.Snappy;
 
 import java.io.*;

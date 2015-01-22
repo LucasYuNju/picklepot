@@ -2,9 +2,9 @@ package com.intel.picklepot.columnar;
 
 import com.google.common.primitives.Primitives;
 import com.intel.picklepot.format.Block;
-import com.intel.picklepot.storage.SimpleDataInput;
-import com.intel.picklepot.storage.SimpleDataOutput;
-import com.intel.picklepot.unsafe.FieldType;
+import com.intel.picklepot.io.SimpleDataInput;
+import com.intel.picklepot.io.SimpleDataOutput;
+import com.intel.picklepot.serialization.FieldType;
 import parquet.bytes.BytesInput;
 import parquet.column.ColumnDescriptor;
 import parquet.column.Dictionary;

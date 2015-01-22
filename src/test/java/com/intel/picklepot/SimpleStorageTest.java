@@ -1,12 +1,12 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.metadata.ClassInfo;
-import com.intel.picklepot.metadata.FieldInfo;
-import com.intel.picklepot.storage.DataInput;
-import com.intel.picklepot.storage.DataOutput;
-import com.intel.picklepot.storage.SimpleDataInput;
-import com.intel.picklepot.storage.SimpleDataOutput;
+import com.intel.picklepot.columnar.legacy.metadata.ClassInfo;
+import com.intel.picklepot.columnar.legacy.metadata.FieldInfo;
+import com.intel.picklepot.io.DataInput;
+import com.intel.picklepot.io.DataOutput;
+import com.intel.picklepot.io.SimpleDataInput;
+import com.intel.picklepot.io.SimpleDataOutput;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

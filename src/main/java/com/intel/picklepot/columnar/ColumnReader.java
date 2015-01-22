@@ -1,7 +1,7 @@
 package com.intel.picklepot.columnar;
 
 import com.intel.picklepot.format.Block;
-import com.intel.picklepot.unsafe.FieldType;
+import com.intel.picklepot.serialization.FieldType;
 import parquet.column.Encoding;
 import parquet.column.values.ValuesReader;
 
