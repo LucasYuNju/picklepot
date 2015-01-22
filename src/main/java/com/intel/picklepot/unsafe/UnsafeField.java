@@ -31,11 +31,11 @@ public class UnsafeField implements Serializable{
       case STRING:
         return new UnsafeStringField(clazz, offset, picklePot);
       case NESTED:
-        return new UnsafeNestedField(clazz, offset, picklePot);
+        return new UnsafeNestedField(object, offset, picklePot);
       case UNSUPPRTED:
         return new UnsafeUnsupportedField(clazz, offset, picklePot);
       default:
-        return new UnsafeNestedField(object, offset, picklePot);
+        return null;
     }
   }
 
