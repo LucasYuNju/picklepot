@@ -1,6 +1,7 @@
 package com.intel.picklepot.unsafe;
 
 import com.intel.picklepot.columnar.Utils;
+import com.intel.picklepot.exception.PicklePotException;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -21,7 +22,7 @@ public class FieldGroup implements Serializable {
 
   public FieldGroup(Object object, NewPicklePotImpl picklePot) {
     this.clazz = object.getClass();
-    if(Utils.classToType(clazz) == Type.NESTED) {
+    if(Utils.toFieldType(clazz) == FieldType.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
       List<UnsafeField> unsafeFieldList = new ArrayList<UnsafeField>();
       for (Field field : fields) {
@@ -50,7 +51,7 @@ public class FieldGroup implements Serializable {
     }
   }
 
-  public Object write(Object object) {
+  public Object write(Object object) throws PicklePotException {
     for (UnsafeField field : unsafeFields) {
       field.write(object);
     }
@@ -74,7 +75,7 @@ public class FieldGroup implements Serializable {
   }
 
   public boolean isNested() {
-    return Utils.classToType(clazz) == Type.NESTED;
+    return Utils.toFieldType(clazz) == FieldType.NESTED;
   }
 
   public Class getClazz() {

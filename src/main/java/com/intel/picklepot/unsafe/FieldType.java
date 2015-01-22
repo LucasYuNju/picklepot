@@ -1,6 +1,6 @@
 package com.intel.picklepot.unsafe;
 
-public enum Type {
+public enum FieldType {
   /**
    * int or Integer
    */

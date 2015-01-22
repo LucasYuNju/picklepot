@@ -1,8 +1,6 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.storage.SimpleDataInput;
-import com.intel.picklepot.storage.SimpleDataOutput;
 import com.intel.picklepot.unsafe.NewPicklePotImpl;
 
 import java.io.ByteArrayInputStream;
@@ -15,19 +13,17 @@ public class SimpleTest implements Serializable{
   public void testPiclePot() throws PicklePotException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    NewPicklePotImpl<String> picklePot = new NewPicklePotImpl<String>();
-    SimpleDataOutput sdo = new SimpleDataOutput(baos);
-    picklePot.initialize(null, sdo, null);
-    picklePot.add("");
-    picklePot.add("");
+    NewPicklePotImpl<String> picklePot = new NewPicklePotImpl<String>(baos, null);
+    picklePot.add("aaa");
+    picklePot.add("bbb");
     picklePot.flush();
     picklePot.close();
 
-    NewPicklePotImpl picklepot = new NewPicklePotImpl();
-    SimpleDataInput sdi = new SimpleDataInput();
-    sdi.initialize(new ByteArrayInputStream(baos.toByteArray()));
-    Object obj = picklepot.deserialize(sdi);
-    return;
+    NewPicklePotImpl picklepot = new NewPicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    Object obj = picklepot.deserialize();
+    System.out.println(obj);
+    obj = picklepot.deserialize();
+    System.out.println(obj);
   }
 
   public static void main(String args[]) throws IOException {

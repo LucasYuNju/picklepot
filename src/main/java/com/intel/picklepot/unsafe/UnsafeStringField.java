@@ -1,6 +1,7 @@
 package com.intel.picklepot.unsafe;
 
 import com.intel.picklepot.columnar.Utils;
+import com.intel.picklepot.exception.PicklePotException;
 
 public class UnsafeStringField extends UnsafeField{
 
@@ -9,7 +10,7 @@ public class UnsafeStringField extends UnsafeField{
   }
 
   @Override
-  public void write(Object object) {
+  public void write(Object object) throws PicklePotException {
     if(writer == null) {
       writer = Utils.getColumnWriter(clazz, picklePot.getOutput());
     }

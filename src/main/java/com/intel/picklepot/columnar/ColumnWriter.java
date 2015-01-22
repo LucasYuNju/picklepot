@@ -1,8 +1,9 @@
 package com.intel.picklepot.columnar;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.metadata.Block;
+import com.intel.picklepot.format.Block;
 import com.intel.picklepot.storage.SimpleDataOutput;
+import com.intel.picklepot.unsafe.FieldType;
 import parquet.column.page.DictionaryPage;
 import parquet.column.values.ValuesWriter;
 import parquet.io.api.Binary;
@@ -12,29 +13,31 @@ import java.io.IOException;
 public class ColumnWriter {
   private ValuesWriter valuesWriter;
   private SimpleDataOutput output;
-  private int numValues = 0;
   private ColumnStatistics statistics;
+  private FieldType type;
+  private int numValues;
 
-  public ColumnWriter(ValuesWriter valuesWriter, SimpleDataOutput output) {
+  public ColumnWriter(ValuesWriter valuesWriter, SimpleDataOutput output, Class clazz) {
     this.output = output;
     this.valuesWriter = valuesWriter;
     this.statistics = new ColumnStatistics();
+    this.type = Utils.toFieldType(clazz);
   }
 
-  public void write(Object value) {
+  public void write(Object value) throws PicklePotException {
     numValues++;
-    if (value.getClass().equals(String.class)) {
+    if(Utils.toFieldType(value.getClass()) != type) {
+      throw new PicklePotException("type mismatch! expected:" + type + ", actual:" + Utils.toFieldType(value.getClass()));
+    }
+
+    if (type == FieldType.STRING) {
       valuesWriter.writeBytes(Binary.fromByteArray(((String) value).getBytes()));
-    } else if(value.getClass().equals(Integer.class) || value.getClass().equals(int.class)){
+    } else if(type == FieldType.INT){
       valuesWriter.writeInteger((Integer) value);
     } else {
       ((ObjectValuesWriter)valuesWriter).writeObject(value);
     }
-    try {
-      statistics.add(value);
-    } catch (PicklePotException e) {
-      e.printStackTrace();
-    }
+    statistics.add(value);
   }
 
   public void writeToBlock() {

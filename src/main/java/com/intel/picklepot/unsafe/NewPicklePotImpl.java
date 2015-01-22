@@ -6,21 +6,34 @@ import com.intel.picklepot.storage.DataInput;
 import com.intel.picklepot.storage.DataOutput;
 import com.intel.picklepot.storage.SimpleDataInput;
 import com.intel.picklepot.storage.SimpleDataOutput;
-import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
 
-import java.util.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.Map;
 
 public class NewPicklePotImpl<T> implements PicklePot<T>{
   private volatile long count = 0;
   private FieldGroup fieldGroup;
   private SimpleDataInput input;
   private SimpleDataOutput output;
+  private ObjectInstantiator instantiator;
+
+  public NewPicklePotImpl(OutputStream os, Map configuration) {
+    output = new SimpleDataOutput(os);
+    output.initialize();
+  }
+
+  public NewPicklePotImpl(InputStream is) {
+    input = new SimpleDataInput();
+    input.initialize(is);
+  }
 
   @Override
-  public void initialize(Class className, DataOutput output, Map configuration) {
-    this.output = (SimpleDataOutput) output;
+  public void initialize(Class<T> className, DataOutput output, Map<String, String> configuration) {
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -44,45 +57,48 @@ public class NewPicklePotImpl<T> implements PicklePot<T>{
     return count;
   }
 
-  /**
-   * do the compression work and flush to DataOutput.
-   */
+  @Override
   public void flush() throws PicklePotException {
-    output.initialize();
     fieldGroup.setNumvals(count);
     output.writeFieldGroup(fieldGroup);
     fieldGroup.flush();
   }
 
-  public void close() throws PicklePotException{
-    output.close();
+  @Override
+  public Iterator<T> deserialize(DataInput input) throws PicklePotException {
+    throw new UnsupportedOperationException();
   }
 
   @Override
-  public Iterator<T> deserialize(DataInput input) throws PicklePotException {
-    this.input = (SimpleDataInput) input;
-    this.fieldGroup = this.input.readFieldGroup();
-    this.count = fieldGroup.getNumVals();
-    fieldGroup.setPicklePot(this);
-
-    List<Object> res = new ArrayList<Object>((int)count);
-    Class clazz = fieldGroup.getClazz();
-    Objenesis objenesis = new ObjenesisStd();
-    ObjectInstantiator instantiator = objenesis.getInstantiatorOf(clazz);
-    for( ; count>0; count--) {
-      if(fieldGroup.isNested()) {
-        Object obj = instantiator.newInstance();
-        fieldGroup.read(obj);
-        res.add(obj);
-      }
-      else {
-        res.add(fieldGroup.read());
-      }
+  public T deserialize() throws PicklePotException{
+    if(fieldGroup == null) {
+      fieldGroup = input.readFieldGroup();
+      count = fieldGroup.getNumVals();
+      fieldGroup.setPicklePot(this);
+      instantiator = new ObjenesisStd().getInstantiatorOf(fieldGroup.getClazz());
     }
-    return (Iterator<T>) res.iterator();
+    if(count-- < 0) {
+      return null;
+    }
+    if(fieldGroup.isNested()) {
+      Object obj = instantiator.newInstance();
+      fieldGroup.read(obj);
+      return (T) obj;
+    }
+    else {
+      return (T) fieldGroup.read();
+    }
   }
 
-  //TODO need a sequential fetch method
+  @Override
+  public void close() {
+    output.close();
+  }
+
+  public boolean hasNext() {
+    return count > 0;
+  }
+
   SimpleDataInput getInput() {
     return input;
   }

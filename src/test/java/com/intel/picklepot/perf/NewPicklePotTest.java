@@ -8,6 +8,7 @@ import org.xerial.snappy.Snappy;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class NewPicklePotTest extends Template{
@@ -21,12 +22,11 @@ public class NewPicklePotTest extends Template{
 
   @Override
   protected void serialize() throws Exception {
-    picklePot = new NewPicklePotImpl<Object>();
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    objects = InputUtils.getObjects();
-    picklePot.initialize((Class)objects.get(0).getClass(), new SimpleDataOutput(outputStream), null);
-    picklePot.add(objects.iterator());
+    picklePot = new NewPicklePotImpl<Object>(outputStream, null);
 
+    objects = InputUtils.getObjects();
+    picklePot.add(objects.iterator());
     picklePot.flush();
     picklePot.close();
     serialized = outputStream.toByteArray();
@@ -35,9 +35,12 @@ public class NewPicklePotTest extends Template{
 
   @Override
   protected void deserialize() throws Exception {
-    SimpleDataInput dataInput = new SimpleDataInput();
-    dataInput.initialize(new ByteArrayInputStream(serialized));
-    restored = picklePot.deserialize(dataInput);
+    picklePot = new NewPicklePotImpl<Object>(new ByteArrayInputStream(serialized));
+    LinkedList<Object> list = new LinkedList<Object>();
+    while(picklePot.hasNext()) {
+      list.add(picklePot.deserialize());
+    }
+    restored = list.iterator();
   }
 
   @Override

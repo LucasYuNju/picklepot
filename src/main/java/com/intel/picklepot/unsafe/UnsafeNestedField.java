@@ -1,6 +1,7 @@
 package com.intel.picklepot.unsafe;
 
 import com.intel.picklepot.columnar.Utils;
+import com.intel.picklepot.exception.PicklePotException;
 
 /**
  * UnsafeObjectField can serialize object in this field with Java built-in serializer,
@@ -11,13 +12,13 @@ public class UnsafeNestedField extends UnsafeField{
 
   public UnsafeNestedField(Object object, long offset, NewPicklePotImpl picklepot) {
     super(object.getClass(), offset, picklepot);
-    if(Utils.classToType(clazz) == Type.NESTED) {
+    if(Utils.toFieldType(clazz) == FieldType.NESTED) {
       group = new FieldGroup(object, picklePot);
     }
   }
 
   @Override
-  public void write(Object object) {
+  public void write(Object object) throws PicklePotException {
     if(group != null) {
       group.write(object);
     }

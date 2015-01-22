@@ -1,7 +1,7 @@
 package com.intel.picklepot.storage;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.metadata.Block;
+import com.intel.picklepot.format.Block;
 import com.intel.picklepot.metadata.ClassInfo;
 import com.intel.picklepot.unsafe.FieldGroup;
 

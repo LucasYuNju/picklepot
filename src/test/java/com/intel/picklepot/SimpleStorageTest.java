@@ -95,7 +95,12 @@ class DumbPicklePot implements PicklePot<Pair> {
     return null;
   }
 
-  public void flush() throws IOException, PicklePotException {
+  @Override
+  public Pair deserialize() throws PicklePotException {
+    return null;
+  }
+
+  public void flush() throws PicklePotException {
     if (output != null) {
       List<byte[]> fieldsByte = new ArrayList<byte[]>();
       fieldsByte.add(wordStream.toByteArray());
@@ -104,5 +109,10 @@ class DumbPicklePot implements PicklePot<Pair> {
       for(byte[] bytes : fieldsByte)
         output.writeFieldByte(bytes);
     }
+  }
+
+  @Override
+  public void close() {
+
   }
 }

@@ -1,14 +1,22 @@
 package com.intel.picklepot.columnar;
 
 import com.google.common.primitives.Primitives;
-import com.intel.picklepot.metadata.Block;
+import com.intel.picklepot.format.Block;
 import com.intel.picklepot.storage.SimpleDataInput;
 import com.intel.picklepot.storage.SimpleDataOutput;
-import com.intel.picklepot.unsafe.Type;
+import com.intel.picklepot.unsafe.FieldType;
+import parquet.bytes.BytesInput;
+import parquet.column.ColumnDescriptor;
+import parquet.column.Dictionary;
+import parquet.column.Encoding;
+import parquet.column.ValuesType;
+import parquet.column.page.DictionaryPage;
+import parquet.column.values.ValuesReader;
 import parquet.column.values.ValuesWriter;
 import parquet.column.values.delta.DeltaBinaryPackingValuesWriter;
 import parquet.column.values.deltastrings.DeltaByteArrayWriter;
 import parquet.column.values.dictionary.DictionaryValuesWriter;
+import parquet.schema.PrimitiveType;
 import sun.misc.Unsafe;
 
 import java.io.IOException;
@@ -32,9 +40,9 @@ public class Utils {
     Utils.initialSizePerCol = initialSizePerCol;
   }
 
-  public static ColumnWriter getColumnWriter(Class columnClazz, SimpleDataOutput output) {
+  public static ColumnWriter getColumnWriter(Class clazz, SimpleDataOutput output) {
     ValuesWriter valuesWriter;
-    switch(classToType(columnClazz)) {
+    switch(toFieldType(clazz)) {
       case STRING:
         if (enableDict) {
           valuesWriter = new DictionaryValuesWriter.PlainBinaryDictionaryValuesWriter(dictBlockSizeThreshold, initialSizePerCol);
@@ -49,18 +57,32 @@ public class Utils {
       default:
         valuesWriter = new ObjectValuesWriter();
     }
-    return new ColumnWriter(valuesWriter, output);
+    return new ColumnWriter(valuesWriter, output, clazz);
   }
 
-  public static ColumnReader getColumnReader(Class columnClazz, SimpleDataInput input) {
+  public static ColumnReader getColumnReader(Class clazz, SimpleDataInput input) {
+    ValuesReader valuesReader = null;
     Block dataBlock = input.readBlock();
     Block dictBlock = dataBlock.getEncoding().usesDictionary() ? input.readBlock() : null;
+
+    ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {""}, getParquetType(clazz), 0, 0);
+    Encoding encoding = dataBlock.getEncoding();
     try {
-      return new ColumnReader(dataBlock, dictBlock, columnClazz);
+      if (encoding == Encoding.BIT_PACKED) {
+        valuesReader = new ObjectValuesReader();
+      } else if (encoding.usesDictionary()) {
+        DictionaryPage dictPage = new DictionaryPage(BytesInput.from(dictBlock.getBytes()),
+            dictBlock.getBytes().length, dictBlock.getNumValues(), dictBlock.getEncoding());
+        Dictionary dict = encoding.initDictionary(descriptor, dictPage);
+        valuesReader = encoding.getDictionaryBasedValuesReader(descriptor, ValuesType.VALUES, dict);
+      } else {
+        valuesReader = encoding.getValuesReader(descriptor, ValuesType.VALUES);
+      }
+      valuesReader.initFromPage(dataBlock.getNumValues(), dataBlock.getBytes(), 0);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return null;
+    return new ColumnReader(valuesReader, dataBlock, clazz);
   }
 
   public static Unsafe getUnsafe() {
@@ -78,16 +100,22 @@ public class Utils {
     return unsafe;
   }
 
-  public static Type classToType(Class clazz) {
+  public static FieldType toFieldType(Class clazz) {
     if(clazz == String.class) {
-      return Type.STRING;
+      return FieldType.STRING;
     }
     if(clazz == Integer.class || clazz == int.class) {
-      return Type.INT;
+      return FieldType.INT;
     }
     if(clazz.isPrimitive() || Primitives.isWrapperType(clazz) || clazz.isArray()) {
-      return Type.UNSUPPRTED;
+      return FieldType.UNSUPPRTED;
     }
-    return Type.NESTED;
+    return FieldType.NESTED;
+  }
+
+  private static PrimitiveType.PrimitiveTypeName getParquetType(Class clazz) {
+    if(clazz==String.class)
+      return PrimitiveType.PrimitiveTypeName.BINARY;
+    return PrimitiveType.PrimitiveTypeName.INT32;
   }
 }

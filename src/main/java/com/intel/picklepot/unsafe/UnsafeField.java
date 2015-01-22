@@ -3,6 +3,7 @@ package com.intel.picklepot.unsafe;
 import com.intel.picklepot.columnar.ColumnReader;
 import com.intel.picklepot.columnar.ColumnWriter;
 import com.intel.picklepot.columnar.Utils;
+import com.intel.picklepot.exception.PicklePotException;
 
 import java.io.Serializable;
 
@@ -24,7 +25,7 @@ public class UnsafeField implements Serializable{
   }
 
   public static UnsafeField getUnsafeField(Class clazz, Object object, long offset, NewPicklePotImpl picklePot) {
-    switch (Utils.classToType(object.getClass())) {
+    switch (Utils.toFieldType(object.getClass())) {
       case INT:
         return new UnsafeIntField(clazz, offset, picklePot);
       case STRING:
@@ -32,6 +33,7 @@ public class UnsafeField implements Serializable{
       case NESTED:
         return new UnsafeNestedField(clazz, offset, picklePot);
       case UNSUPPRTED:
+        return new UnsafeUnsupportedField(clazz, offset, picklePot);
       default:
         return new UnsafeNestedField(object, offset, picklePot);
     }
@@ -45,7 +47,7 @@ public class UnsafeField implements Serializable{
    * @param object
    * write object itself into outputstream. This is a special implementation.
    */
-  public void write(Object object) {
+  public void write(Object object) throws PicklePotException {
     if(writer == null) {
       writer = Utils.getColumnWriter(clazz, picklePot.getOutput());
     }

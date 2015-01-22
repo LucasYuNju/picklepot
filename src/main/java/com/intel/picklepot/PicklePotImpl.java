@@ -3,7 +3,6 @@ package com.intel.picklepot;
 import com.intel.picklepot.columnar.*;
 import com.intel.picklepot.columnar.Utils;
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.metadata.Block;
 import com.intel.picklepot.metadata.FieldInfo;
 import com.intel.picklepot.serialization.InstancePot;
 import com.intel.picklepot.storage.DataInput;
@@ -70,13 +69,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     List<ColumnReader> readers = new ArrayList<ColumnReader>();
     Iterator<FieldInfo> fieldInfos = dataInput.getClassInfo().getFieldInfos().values().iterator();
     while (fieldInfos.hasNext()) {
-      Block dataBlock = dataInput.readBlock();
-      Block dictBlock = dataBlock.getEncoding().usesDictionary() ? dataInput.readBlock() : null;
-      try {
-        readers.add(new ColumnReader(dataBlock, dictBlock, fieldInfos.next().getFieldClass()));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      readers.add(Utils.getColumnReader(fieldInfos.next().getFieldClass(), dataInput));
     }
 
     logReaders(readers);
@@ -111,6 +104,11 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     return result.iterator();
   }
 
+  @Override
+  public T deserialize() throws PicklePotException {
+    throw new UnsupportedOperationException();
+  }
+
   private void logReaders(List<ColumnReader> readers) {
     try {
       BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/picklepot_encoding", true));
@@ -126,9 +124,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     }
   }
 
-  /**
-   * do the compression work and flush to DataOutput.
-   */
+  @Override
   public void flush() throws PicklePotException {
     SimpleDataOutput dataOutput = (SimpleDataOutput) this.dataOutput;
     dataOutput.initialize();
@@ -147,10 +143,8 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     }
   }
 
-  /**
-   * current implementation do not allow multiple flush. PicklePotImpl flush only once when it is closed
-   */
-  public void close() throws PicklePotException{
+  @Override
+  public void close() {
     dataOutput.close();
   }
 
