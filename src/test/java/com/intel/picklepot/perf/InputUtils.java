@@ -1,7 +1,7 @@
 package com.intel.picklepot.perf;
 
 import com.intel.picklepot.Pair;
-import com.intel.picklepot.columnar.ColumnStatistics;
+import com.intel.picklepot.column.Statistics;
 import scala.Tuple2;
 
 import java.io.*;
@@ -41,7 +41,7 @@ public class InputUtils {
         BufferedReader reader = new BufferedReader(new FileReader(new File("data/orders.tbl")));
         String line;
         while((line = reader.readLine()) != null) {
-          objects.add(new ColumnStatistics.Order(line));
+          objects.add(new Statistics.Order(line));
         }
       } catch (FileNotFoundException e) {
         e.printStackTrace();

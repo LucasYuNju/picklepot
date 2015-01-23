@@ -1,19 +1,24 @@
 package com.intel.picklepot.serialization;
 
 import com.intel.picklepot.PicklePotImpl;
-import com.intel.picklepot.columnar.Utils;
+import com.intel.picklepot.column.IntColumnReader;
+import com.intel.picklepot.column.IntColumnWriter;
 import com.intel.picklepot.exception.PicklePotException;
 
 public class UnsafeIntField extends UnsafeField{
 
-  public UnsafeIntField(Class clazz, long offset, PicklePotImpl picklePot) {
-    super(clazz, offset, picklePot);
+  public UnsafeIntField(Class clazz, long offset, PicklePotImpl picklePot, boolean directAccess) {
+    super(clazz, offset, picklePot, directAccess);
   }
 
   @Override
   public void write(Object object) throws PicklePotException {
     if(writer == null) {
-      writer = Utils.getColumnWriter(clazz, picklePot.getOutput());
+      writer = new IntColumnWriter(picklePot.getOutput());
+    }
+    if(directAccess) {
+      writer.write(object);
+      return;
     }
     Integer intVal;
     if(clazz == int.class) {
@@ -28,7 +33,10 @@ public class UnsafeIntField extends UnsafeField{
   @Override
   public Object read(Object object) {
     if(reader == null) {
-      reader = Utils.getColumnReader(clazz, picklePot.getInput());
+      reader = new IntColumnReader(picklePot.getInput());
+    }
+    if(directAccess) {
+      return reader.read();
     }
     Integer intVal = (Integer) reader.read();
     if(clazz == int.class) {

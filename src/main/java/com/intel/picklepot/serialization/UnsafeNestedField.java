@@ -1,7 +1,6 @@
 package com.intel.picklepot.serialization;
 
 import com.intel.picklepot.PicklePotImpl;
-import com.intel.picklepot.columnar.Utils;
 import com.intel.picklepot.exception.PicklePotException;
 
 /**
@@ -11,8 +10,8 @@ import com.intel.picklepot.exception.PicklePotException;
 public class UnsafeNestedField extends UnsafeField {
   private FieldGroup group;
 
-  public UnsafeNestedField(Object object, long offset, PicklePotImpl picklepot) {
-    super(object.getClass(), offset, picklepot);
+  public UnsafeNestedField(Object object, long offset, PicklePotImpl picklepot, boolean directAccess) {
+    super(object.getClass(), offset, picklepot, directAccess);
     group = new FieldGroup(object, picklePot);
   }
 

@@ -37,6 +37,7 @@ public class SimpleDataOutput implements DataOutput {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    flush();
   }
 
   @Override

@@ -1,7 +1,6 @@
 package com.intel.picklepot.serialization;
 
 import com.intel.picklepot.PicklePotImpl;
-import com.intel.picklepot.columnar.Utils;
 import com.intel.picklepot.exception.PicklePotException;
 
 import java.io.Serializable;
@@ -23,7 +22,7 @@ public class FieldGroup implements Serializable {
 
   public FieldGroup(Object object, PicklePotImpl picklePot) {
     this.clazz = object.getClass();
-    if(Utils.toFieldType(clazz) == FieldType.NESTED) {
+    if(Type.get(clazz) == Type.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
       List<UnsafeField> unsafeFieldList = new ArrayList<UnsafeField>();
       for (Field field : fields) {
@@ -40,7 +39,7 @@ public class FieldGroup implements Serializable {
         field.setAccessible(accessible);
 
         long offset = Utils.getUnsafe().objectFieldOffset(field);
-        unsafeFieldList.add(UnsafeField.getUnsafeField(field.getType(), fieldObj, offset, picklePot));
+        unsafeFieldList.add(UnsafeFieldFactory.getUnsafeField(field.getType(), fieldObj, offset, picklePot, false));
       }
       unsafeFields = new UnsafeField[unsafeFieldList.size()];
       for(int i=0; i<unsafeFields.length; i++) {
@@ -48,7 +47,7 @@ public class FieldGroup implements Serializable {
       }
     }
     else {
-      unsafeFields = new UnsafeField[] {UnsafeField.getUnsafeField(object.getClass(), picklePot)};
+      unsafeFields = new UnsafeField[] {UnsafeFieldFactory.getUnsafeField(object.getClass(), object, 0, picklePot, true)};
     }
   }
 
@@ -76,7 +75,7 @@ public class FieldGroup implements Serializable {
   }
 
   public boolean isNested() {
-    return Utils.toFieldType(clazz) == FieldType.NESTED;
+    return Type.get(clazz) == Type.NESTED;
   }
 
   public Class getClazz() {

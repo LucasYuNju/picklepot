@@ -8,13 +8,18 @@ import java.io.IOException;
 import java.io.Serializable;
 
 public class SimpleTest implements Serializable{
+  Pair p;
 
-  public void testPiclePot() throws PicklePotException {
+  public SimpleTest(String a, int b) {
+    p = new Pair(a, b);
+  }
+
+  public static void testPiclePot() throws PicklePotException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    PicklePotImpl<String> picklePot = new PicklePotImpl<String>(baos, null);
-    picklePot.write("aa");
-    picklePot.write("bbb");
+    PicklePotImpl<Object> picklePot = new PicklePotImpl<Object>(baos, null);
+    picklePot.write(new SimpleTest("a", 1));
+    picklePot.write(new SimpleTest("bbb", 2));
     picklePot.flush();
     picklePot.close();
 
@@ -27,7 +32,7 @@ public class SimpleTest implements Serializable{
 
   public static void main(String args[]) throws IOException {
     try {
-      new SimpleTest().testPiclePot();
+      testPiclePot();
     } catch (PicklePotException e) {
       e.printStackTrace();
     }
