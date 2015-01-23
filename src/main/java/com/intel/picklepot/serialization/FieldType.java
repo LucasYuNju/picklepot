@@ -1,16 +1,12 @@
 package com.intel.picklepot.serialization;
 
 public enum FieldType {
-  /**
-   * int or Integer
-   */
   INT,
-  /**
-   * String
-   */
   STRING,
+  FLOAT,
+  LONG,
   /**
-   * 1.Primitive types excluding INT and STRING, like Long and float
+   * 1.Primitive types excluding above types, like double
    * 2.Array, like Int[]
    */
   UNSUPPRTED,

@@ -12,16 +12,16 @@ public class SimpleTest implements Serializable{
   public void testPiclePot() throws PicklePotException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    NewPicklePotImpl<String> picklePot = new NewPicklePotImpl<String>(baos, null);
-    picklePot.add("aaa");
-    picklePot.add("bbb");
+    PicklePotImpl<String> picklePot = new PicklePotImpl<String>(baos, null);
+    picklePot.write("aa");
+    picklePot.write("bbb");
     picklePot.flush();
     picklePot.close();
 
-    NewPicklePotImpl picklepot = new NewPicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
-    Object obj = picklepot.deserialize();
+    PicklePotImpl picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    Object obj = picklepot.read();
     System.out.println(obj);
-    obj = picklepot.deserialize();
+    obj = picklepot.read();
     System.out.println(obj);
   }
 

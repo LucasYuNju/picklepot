@@ -1,6 +1,6 @@
 package com.intel.picklepot.serialization;
 
-import com.intel.picklepot.NewPicklePotImpl;
+import com.intel.picklepot.PicklePotImpl;
 import com.intel.picklepot.columnar.Utils;
 import com.intel.picklepot.exception.PicklePotException;
 
@@ -11,17 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * There is a special case when the class of object to be serialized can not be unfolded.
- * for example, if object.getClass() == String.class, the String class will be treated as a single Field
+ * FieldGroup delgate actual serialization work to UnsafeFields.
+ * If clazz is String(or any other supported Type), FieldGroup does not inspect the Fields inside String.
+ * Instead, FieldGroup will work as if clazz contains a single String Field, and serialize Strings with UnsafeStringField.
  */
-
 public class FieldGroup implements Serializable {
   private Class clazz;
   private UnsafeField[] unsafeFields;
   //a temporary way to record how many objs has been serialized
   private long numVals;
 
-  public FieldGroup(Object object, NewPicklePotImpl picklePot) {
+  public FieldGroup(Object object, PicklePotImpl picklePot) {
     this.clazz = object.getClass();
     if(Utils.toFieldType(clazz) == FieldType.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
@@ -83,7 +83,12 @@ public class FieldGroup implements Serializable {
     return clazz;
   }
 
-  public void setPicklePot(NewPicklePotImpl picklePot) {
+  /**
+   * need to be called when FieldGroup is read from ObjectInputStream,
+   *
+   * @param picklePot
+   */
+  public void setPicklePot(PicklePotImpl picklePot) {
     for(UnsafeField field : unsafeFields) {
       field.setPicklePot(picklePot);
     }

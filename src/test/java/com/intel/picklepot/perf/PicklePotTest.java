@@ -1,31 +1,30 @@
 package com.intel.picklepot.perf;
 
 import com.intel.picklepot.PicklePotImpl;
-import com.intel.picklepot.io.SimpleDataInput;
-import com.intel.picklepot.io.SimpleDataOutput;
 import org.xerial.snappy.Snappy;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
-public class PicklePotTest extends Template {
+public class PicklePotTest extends Template{
   PicklePotImpl<Object> picklePot;
   Iterator restored;
   List objects;
 
   public PicklePotTest(int repeations) {
-    super("picklepot+snappy", repeations);
+    super("newpicklepot+snappy", repeations);
   }
 
   @Override
   protected void serialize() throws Exception {
-    picklePot = new PicklePotImpl<Object>();
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    objects = InputUtils.getObjects();
-    picklePot.initialize((Class)objects.get(0).getClass(), new SimpleDataOutput(outputStream), null);
-    picklePot.add(objects.iterator());
+    picklePot = new PicklePotImpl<Object>(outputStream, null);
 
+    objects = InputUtils.getObjects();
+    picklePot.write(objects.iterator());
     picklePot.flush();
     picklePot.close();
     serialized = outputStream.toByteArray();
@@ -34,9 +33,12 @@ public class PicklePotTest extends Template {
 
   @Override
   protected void deserialize() throws Exception {
-    SimpleDataInput dataInput = new SimpleDataInput();
-    dataInput.initialize(new ByteArrayInputStream(serialized));
-    restored = picklePot.deserialize(dataInput);
+    picklePot = new PicklePotImpl<Object>(new ByteArrayInputStream(serialized));
+    LinkedList<Object> list = new LinkedList<Object>();
+    while(picklePot.hasNext()) {
+      list.add(picklePot.read());
+    }
+    restored = list.iterator();
   }
 
   @Override

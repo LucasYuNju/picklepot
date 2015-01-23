@@ -1,6 +1,6 @@
 package com.intel.picklepot.serialization;
 
-import com.intel.picklepot.NewPicklePotImpl;
+import com.intel.picklepot.PicklePotImpl;
 import com.intel.picklepot.columnar.ColumnReader;
 import com.intel.picklepot.columnar.ColumnWriter;
 import com.intel.picklepot.columnar.Utils;
@@ -13,19 +13,19 @@ public class UnsafeField implements Serializable{
   protected Class clazz;
   protected transient ColumnWriter writer;
   protected transient ColumnReader reader;
-  protected transient NewPicklePotImpl picklePot;
+  protected transient PicklePotImpl picklePot;
 
-  public UnsafeField(Class clazz, long offset, NewPicklePotImpl picklepot) {
+  public UnsafeField(Class clazz, long offset, PicklePotImpl picklepot) {
     this.clazz = clazz;
     this.offset = offset;
     this.picklePot = picklepot;
   }
 
-  public void setPicklePot(NewPicklePotImpl picklePot) {
+  public void setPicklePot(PicklePotImpl picklePot) {
     this.picklePot = picklePot;
   }
 
-  public static UnsafeField getUnsafeField(Class clazz, Object object, long offset, NewPicklePotImpl picklePot) {
+  public static UnsafeField getUnsafeField(Class clazz, Object object, long offset, PicklePotImpl picklePot) {
     switch (Utils.toFieldType(object.getClass())) {
       case INT:
         return new UnsafeIntField(clazz, offset, picklePot);
@@ -40,7 +40,7 @@ public class UnsafeField implements Serializable{
     }
   }
 
-  public static UnsafeField getUnsafeField(Class clazz, NewPicklePotImpl picklePot) {
+  public static UnsafeField getUnsafeField(Class clazz, PicklePotImpl picklePot) {
     return new UnsafeField(clazz, 0, picklePot);
   }
 

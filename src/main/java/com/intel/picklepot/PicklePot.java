@@ -1,7 +1,6 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.io.DataInput;
 import com.intel.picklepot.io.DataOutput;
 
 import java.util.Iterator;
@@ -21,33 +20,26 @@ public interface PicklePot<T> {
   public void initialize(Class<T> className, DataOutput output, Map<String, String> configuration);
 
   /**
-   * add an object to cache for serialization.
+   * serialize object, cache the serialized object in memory.
    * @param obj
    * @return return current object count.
    */
-  public long add(T obj) throws PicklePotException;
+  public long write(T obj) throws PicklePotException;
 
   /**
-   * add all objects in the iterator to cache for serialization.
+   * serialize all objects in the iterator.
    * @param ite
    * @return return current object count.
    */
-  public long add(Iterator<T> ite) throws PicklePotException;
+  public long write(Iterator<T> ite) throws PicklePotException;
 
   /**
    * deserialize an object from input.
-   * @param input
-   * @return iterator of deserialized objects
-   * @throws java.lang.UnsupportedOperationException
-   */
-  public Iterator<T> deserialize(DataInput input) throws PicklePotException;
-
-  /**
    * @return null if there is no object left
    * @throws PicklePotException
    * @throws java.lang.UnsupportedOperationException
    */
-  public T deserialize() throws PicklePotException;
+  public T read() throws PicklePotException;
 
   /**
    * code columns and flush to DataOutput.
@@ -58,4 +50,6 @@ public interface PicklePot<T> {
    * close stream
    */
   public void close();
+
+
 }

@@ -2,8 +2,8 @@ package com.intel.picklepot.columnar;
 
 import com.google.common.primitives.Primitives;
 import com.intel.picklepot.format.Block;
-import com.intel.picklepot.io.SimpleDataInput;
-import com.intel.picklepot.io.SimpleDataOutput;
+import com.intel.picklepot.io.DataInput;
+import com.intel.picklepot.io.DataOutput;
 import com.intel.picklepot.serialization.FieldType;
 import parquet.bytes.BytesInput;
 import parquet.column.ColumnDescriptor;
@@ -40,7 +40,7 @@ public class Utils {
     Utils.initialSizePerCol = initialSizePerCol;
   }
 
-  public static ColumnWriter getColumnWriter(Class clazz, SimpleDataOutput output) {
+  public static ColumnWriter getColumnWriter(Class clazz, DataOutput output) {
     ValuesWriter valuesWriter;
     switch(toFieldType(clazz)) {
       case STRING:
@@ -60,7 +60,7 @@ public class Utils {
     return new ColumnWriter(valuesWriter, output, clazz);
   }
 
-  public static ColumnReader getColumnReader(Class clazz, SimpleDataInput input) {
+  public static ColumnReader getColumnReader(Class clazz, DataInput input) {
     ValuesReader valuesReader = null;
     Block dataBlock = input.readBlock();
     Block dictBlock = dataBlock.getEncoding().usesDictionary() ? input.readBlock() : null;

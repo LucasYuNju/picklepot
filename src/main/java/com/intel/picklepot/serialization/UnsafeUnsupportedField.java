@@ -1,12 +1,12 @@
 package com.intel.picklepot.serialization;
 
-import com.intel.picklepot.NewPicklePotImpl;
+import com.intel.picklepot.PicklePotImpl;
 import com.intel.picklepot.columnar.Utils;
 import com.intel.picklepot.exception.PicklePotException;
 
 public class UnsafeUnsupportedField extends UnsafeField {
 
-  public UnsafeUnsupportedField(Class clazz, long offset, NewPicklePotImpl picklepot) {
+  public UnsafeUnsupportedField(Class clazz, long offset, PicklePotImpl picklepot) {
     super(clazz, offset, picklepot);
   }
 

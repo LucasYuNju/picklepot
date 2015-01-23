@@ -81,8 +81,6 @@ public class InstancePot<T> {
       list.add(obj);
     }
     else {
-      // add field value into value list directly, as fields order in inspector should be same as
-      // fieldsList order.
       List lists = fieldsList;
       this.inspector.inspect(obj, lists);
     }

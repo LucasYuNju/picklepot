@@ -1,20 +1,19 @@
 package com.intel.picklepot.io;
 
-import java.io.InputStream;
+import com.intel.picklepot.format.Block;
+import com.intel.picklepot.serialization.FieldGroup;
 
 public interface DataInput {
 
   /**
-   * initialize serialized source data, it must be invoked before read.
-   * @param inputStream
+   * read class metadata
    */
-  public void initialize(InputStream inputStream);
+  public FieldGroup readFieldGroup();
 
   /**
-   * read bytes from internal serialized source data.
-   * @param bytes
+   * @return column data read from internal stream
    */
-  public void read(byte[] bytes);
+  public Block readBlock();
 
   /**
    * close DataInput, release all resources.

@@ -1,13 +1,21 @@
 
 package com.intel.picklepot.io;
 
+import com.intel.picklepot.format.Block;
+import com.intel.picklepot.serialization.FieldGroup;
+
 public interface DataOutput {
 
   /**
-   * write bytes to internal storage.
-   * @param bytes
+   * write class metadata to internal storage.
    */
-  public void writeBytes(byte[] bytes);
+  public void writeFieldGroup(FieldGroup fieldGroup);
+
+  /**
+   * write column data to internal storage.
+   * @param dataBlock
+   */
+  public void writeBlock(Block dataBlock);
 
   public void flush();
 
