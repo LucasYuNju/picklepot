@@ -4,13 +4,18 @@ import com.google.common.primitives.Primitives;
 import parquet.schema.PrimitiveType;
 
 public enum Type {
+//  FLOAT(PrimitiveType.PrimitiveTypeName.FLOAT),
+//
+//  LONG(PrimitiveType.PrimitiveTypeName.INT64),
+
   INT(PrimitiveType.PrimitiveTypeName.INT32),
 
   STRING(PrimitiveType.PrimitiveTypeName.BINARY),
 
-  FLOAT(PrimitiveType.PrimitiveTypeName.FLOAT),
-
-  LONG(PrimitiveType.PrimitiveTypeName.INT64),
+  /**
+   * [[ is not supported
+   */
+  ARRAY(null),
 
   /**
    * 1.Primitive types excluding above types, like double
@@ -29,20 +34,26 @@ public enum Type {
     this.parquetType = parquetType;
   }
 
-  public PrimitiveType.PrimitiveTypeName getParquetType() {
+  public PrimitiveType.PrimitiveTypeName toParquetType() {
     return parquetType;
   }
 
   public static Type get(Class clazz) {
     if(clazz == String.class) {
-      return Type.STRING;
+      return STRING;
     }
     if(clazz == Integer.class || clazz == int.class) {
-      return Type.INT;
+      return INT;
+    }
+    if(clazz.isArray()) {
+      Type componentType = get(clazz.getComponentType());
+      if(componentType != ARRAY && componentType != UNSUPPORTED && componentType != NESTED) {
+        return ARRAY;
+      }
     }
     if(clazz.isPrimitive() || Primitives.isWrapperType(clazz) || clazz.isArray()) {
-      return Type.UNSUPPORTED;
+      return UNSUPPORTED;
     }
-    return Type.NESTED;
+    return NESTED;
   }
 }

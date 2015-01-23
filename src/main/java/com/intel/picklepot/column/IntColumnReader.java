@@ -12,7 +12,7 @@ public class IntColumnReader extends ColumnReader{
   public IntColumnReader(DataInput input) {
     this.dataBlock = input.readBlock();
     Encoding encoding = dataBlock.getEncoding();
-    ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {""}, Type.INT.getParquetType(), 0, 0);
+    ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {""}, Type.INT.toParquetType(), 0, 0);
     this.valuesReader = encoding.getValuesReader(descriptor, ValuesType.VALUES);
     try {
       valuesReader.initFromPage(dataBlock.getNumValues(), dataBlock.getBytes(), 0);

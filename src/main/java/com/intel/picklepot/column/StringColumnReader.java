@@ -14,7 +14,7 @@ public class StringColumnReader extends ColumnReader{
   public StringColumnReader(DataInput input) {
     this.dataBlock = input.readBlock();
     Block dictBlock = dataBlock.getEncoding().usesDictionary() ? input.readBlock() : null;
-    ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {""}, Type.STRING.getParquetType(), 0, 0);
+    ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {""}, Type.STRING.toParquetType(), 0, 0);
     Encoding encoding = dataBlock.getEncoding();
     if (encoding.usesDictionary()) {
       Dictionary dict = getDictioinary(dictBlock, encoding, descriptor);

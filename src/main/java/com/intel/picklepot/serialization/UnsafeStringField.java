@@ -1,6 +1,7 @@
 package com.intel.picklepot.serialization;
 
 import com.intel.picklepot.PicklePotImpl;
+import com.intel.picklepot.column.ObjectColumnWriter;
 import com.intel.picklepot.column.StringColumnReader;
 import com.intel.picklepot.column.StringColumnWriter;
 import com.intel.picklepot.exception.PicklePotException;

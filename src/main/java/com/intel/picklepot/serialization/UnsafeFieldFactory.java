@@ -9,6 +9,8 @@ public class UnsafeFieldFactory {
         return new UnsafeIntField(clazz, offset, picklePot, directAccess);
       case STRING:
         return new UnsafeStringField(clazz, offset, picklePot, directAccess);
+      case ARRAY:
+        return new UnsafeArrayField(clazz, offset, picklePot, directAccess);
       case NESTED:
         return new UnsafeNestedField(object, offset, picklePot, directAccess);
       case UNSUPPORTED:

@@ -6,8 +6,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
 public class SimpleTest implements Serializable{
+  int[] array;
   Pair p;
 
   public SimpleTest(String a, int b) {
@@ -30,11 +32,13 @@ public class SimpleTest implements Serializable{
     System.out.println(obj);
   }
 
-  public static void main(String args[]) throws IOException {
-    try {
-      testPiclePot();
-    } catch (PicklePotException e) {
-      e.printStackTrace();
-    }
+  public static void main(String args[]) throws Exception {
+//    try {
+//      testPiclePot();
+//    } catch (PicklePotException e) {
+//      e.printStackTrace();
+//    }
+    Field f = SimpleTest.class.getDeclaredField("array");
+    System.out.println(f.getType().getComponentType());
   }
 }
