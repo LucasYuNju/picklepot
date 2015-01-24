@@ -10,8 +10,8 @@ import com.intel.picklepot.exception.PicklePotException;
 public class UnsafeNestedField extends UnsafeField {
   private FieldGroup group;
 
-  public UnsafeNestedField(Object object, long offset, PicklePotImpl picklepot, boolean directAccess) {
-    super(object.getClass(), offset, picklepot, directAccess);
+  public UnsafeNestedField(Object object, long offset, PicklePotImpl picklepot) {
+    super(object.getClass(), offset, picklepot);
     group = new FieldGroup(object, picklePot);
   }
 

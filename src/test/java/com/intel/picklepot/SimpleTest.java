@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 public class SimpleTest implements Serializable{
-  int[] array;
+  Integer[] array = new Integer[] {1, 2, 3};
   Pair p;
 
   public SimpleTest(String a, int b) {
@@ -32,13 +32,29 @@ public class SimpleTest implements Serializable{
     System.out.println(obj);
   }
 
+  public static void testNonNested() throws PicklePotException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    PicklePotImpl<Object> picklePot = new PicklePotImpl<Object>(baos, null);
+    picklePot.write("aaa");
+    picklePot.write("bbb");
+    picklePot.flush();
+    picklePot.close();
+
+    PicklePotImpl picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    Object obj = picklepot.read();
+    System.out.println(obj);
+    obj = picklepot.read();
+    System.out.println(obj);
+  }
+
+
   public static void main(String args[]) throws Exception {
-//    try {
+    try {
 //      testPiclePot();
-//    } catch (PicklePotException e) {
-//      e.printStackTrace();
-//    }
-    Field f = SimpleTest.class.getDeclaredField("array");
-    System.out.println(f.getType().getComponentType());
+      testNonNested();
+    } catch (PicklePotException e) {
+      e.printStackTrace();
+    }
   }
 }

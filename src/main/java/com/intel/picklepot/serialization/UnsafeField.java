@@ -10,7 +10,6 @@ import java.io.Serializable;
 public abstract class UnsafeField implements Serializable{
   protected Class clazz;
   protected long offset;
-  protected boolean directAccess;
   protected transient ColumnWriter writer;
   protected transient ColumnReader reader;
   protected transient PicklePotImpl picklePot;
@@ -19,13 +18,11 @@ public abstract class UnsafeField implements Serializable{
    * @param clazz
    * @param offset
    * @param picklepot
-   * @param directAccess if true, serialize reveived object itself, rather than object's field
    */
-  public UnsafeField(Class clazz, long offset, PicklePotImpl picklepot, boolean directAccess) {
+  public UnsafeField(Class clazz, long offset, PicklePotImpl picklepot) {
     this.clazz = clazz;
     this.offset = offset;
     this.picklePot = picklepot;
-    this.directAccess = directAccess;
   }
 
   /**

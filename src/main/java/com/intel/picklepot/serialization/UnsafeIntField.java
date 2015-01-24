@@ -7,18 +7,14 @@ import com.intel.picklepot.exception.PicklePotException;
 
 public class UnsafeIntField extends UnsafeField{
 
-  public UnsafeIntField(Class clazz, long offset, PicklePotImpl picklePot, boolean directAccess) {
-    super(clazz, offset, picklePot, directAccess);
+  public UnsafeIntField(Class clazz, long offset, PicklePotImpl picklePot) {
+    super(clazz, offset, picklePot);
   }
 
   @Override
   public void write(Object object) throws PicklePotException {
     if(writer == null) {
       writer = new IntColumnWriter(picklePot.getOutput());
-    }
-    if(directAccess) {
-      writer.write(object);
-      return;
     }
     Integer intVal;
     if(clazz == int.class) {
@@ -34,9 +30,6 @@ public class UnsafeIntField extends UnsafeField{
   public Object read(Object object) {
     if(reader == null) {
       reader = new IntColumnReader(picklePot.getInput());
-    }
-    if(directAccess) {
-      return reader.read();
     }
     Integer intVal = (Integer) reader.read();
     if(clazz == int.class) {

@@ -11,13 +11,14 @@ import java.util.List;
 
 /**
  * FieldGroup delgate actual serialization work to UnsafeFields.
- * If clazz is String(or any other supported Type), FieldGroup does not inspect the Fields inside String.
+ * If clazz is String(or is not Type.UNSUPPORTED), FieldGroup does not inspect the Fields inside String.
  * Instead, FieldGroup will work as if clazz contains a single String Field, and serialize Strings with UnsafeStringField.
  */
 public class FieldGroup implements Serializable {
-  private Class clazz;
+  private transient Object ret;
   private UnsafeField[] unsafeFields;
-  //a temporary way to record how many objs has been serialized
+  private Class clazz;
+  //record how many objs has been serialized
   private long numVals;
 
   public FieldGroup(Object object, PicklePotImpl picklePot) {
@@ -39,7 +40,7 @@ public class FieldGroup implements Serializable {
         field.setAccessible(accessible);
 
         long offset = Utils.getUnsafe().objectFieldOffset(field);
-        unsafeFieldList.add(UnsafeFieldFactory.getUnsafeField(field.getType(), fieldObj, offset, picklePot, false));
+        unsafeFieldList.add(UnsafeFieldFactory.getUnsafeField(field.getType(), fieldObj, offset, picklePot));
       }
       unsafeFields = new UnsafeField[unsafeFieldList.size()];
       for(int i=0; i<unsafeFields.length; i++) {
@@ -47,15 +48,26 @@ public class FieldGroup implements Serializable {
       }
     }
     else {
-      unsafeFields = new UnsafeField[] {UnsafeFieldFactory.getUnsafeField(object.getClass(), object, 0, picklePot, true)};
+      try {
+        Field retField = FieldGroup.class.getDeclaredField("ret");
+        long offset = Utils.getUnsafe().objectFieldOffset(retField);
+        unsafeFields = new UnsafeField[] {UnsafeFieldFactory.getUnsafeField(object.getClass(), object, offset, picklePot)};
+      } catch (NoSuchFieldException e) {
+        e.printStackTrace();
+      }
     }
   }
 
-  public Object write(Object object) throws PicklePotException {
-    for (UnsafeField field : unsafeFields) {
-      field.write(object);
+  public void write(Object object) throws PicklePotException {
+    if(isNested()) {
+      for (UnsafeField field : unsafeFields) {
+        field.write(object);
+      }
     }
-    return object;
+    else {
+      ret = object;
+      unsafeFields[0].write(this);
+    }
   }
 
   public void read(Object object) {
@@ -65,7 +77,8 @@ public class FieldGroup implements Serializable {
   }
 
   public Object read() {
-    return unsafeFields[0].read(null);
+    unsafeFields[0].read(this);
+    return ret;
   }
 
   public void flush() {
@@ -74,6 +87,9 @@ public class FieldGroup implements Serializable {
     }
   }
 
+  /**
+   * TODO effiency
+   */
   public boolean isNested() {
     return Type.get(clazz) == Type.NESTED;
   }
@@ -83,8 +99,7 @@ public class FieldGroup implements Serializable {
   }
 
   /**
-   * need to be called when FieldGroup is read from ObjectInputStream,
-   *
+   * need to be called after FieldGroup is read from ObjectInputStream.
    * @param picklePot
    */
   public void setPicklePot(PicklePotImpl picklePot) {

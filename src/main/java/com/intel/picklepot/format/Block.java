@@ -4,7 +4,9 @@ import parquet.column.Encoding;
 
 import java.io.Serializable;
 
-//if this block is encoded with PLAIN_DICTIONARY, a dictionay block follows
+/**
+ * if data block's encoding is PLAIN_DICTIONARY, a dictionay block follows
+ */
 public class Block implements Serializable{
   private Encoding encoding;
   private int numValues;

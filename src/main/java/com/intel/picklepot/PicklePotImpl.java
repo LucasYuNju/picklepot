@@ -55,8 +55,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   @Override
   public long write(Iterator<T> ite) throws PicklePotException {
     while(ite.hasNext()) {
-      T obj = ite.next();
-      write(obj);
+      write(ite.next());
     }
     return count;
   }
@@ -75,7 +74,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
       return null;
     }
     if(input == null) {
-      throw new PicklePotException("");
+      throw new PicklePotException("not initialized");
     }
     if(fieldGroup.isNested()) {
       Object obj = instantiators.get(fieldGroup.getClazz()).newInstance();
@@ -89,6 +88,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
   @Override
   public void close() {
+    count = 0;
     output.close();
   }
 

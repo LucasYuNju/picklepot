@@ -6,14 +6,14 @@ import com.intel.picklepot.serialization.Type;
 import parquet.column.values.ValuesWriter;
 import parquet.column.values.delta.DeltaBinaryPackingValuesWriter;
 
-public class ArrayColumnWriter extends ColumnWriter{
-  private ValuesWriter lengthWriter;
+public class ArrayColumnWriter extends ColumnWriter {
+  private ColumnWriter lengthWriter;
   private ColumnWriter compWriter;
 
   public ArrayColumnWriter(DataOutput output, Class clazz) {
     super(output);
+    this.lengthWriter = new IntColumnWriter(output);
     Class compClazz = clazz.getComponentType();
-    this.lengthWriter = new DeltaBinaryPackingValuesWriter(Settings.initialColSize);
     switch (Type.get(compClazz)) {
       case STRING:
         compWriter = new StringColumnWriter(output);
@@ -29,9 +29,15 @@ public class ArrayColumnWriter extends ColumnWriter{
   @Override
   public void write(Object value) throws PicklePotException {
     Object[] array = (Object[]) value;
-    valuesWriter.writeInteger(array.length);
-    for(Object component : array) {
+    lengthWriter.write(array.length);
+    for (Object component : array) {
       compWriter.write(component);
     }
+  }
+
+  @Override
+  public void writeToBlock() {
+    lengthWriter.writeToBlock();
+    compWriter.writeToBlock();
   }
 }

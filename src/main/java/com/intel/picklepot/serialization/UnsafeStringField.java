@@ -8,18 +8,14 @@ import com.intel.picklepot.exception.PicklePotException;
 
 public class UnsafeStringField extends UnsafeField{
 
-  public UnsafeStringField(Class clazz, long offset, PicklePotImpl picklepot, boolean directAccess) {
-    super(clazz, offset, picklepot, directAccess);
+  public UnsafeStringField(Class clazz, long offset, PicklePotImpl picklepot) {
+    super(clazz, offset, picklepot);
   }
 
   @Override
   public void write(Object object) throws PicklePotException {
     if(writer == null) {
       writer = new StringColumnWriter(picklePot.getOutput());
-    }
-    if(directAccess) {
-      writer.write(object);
-      return;
     }
     String strVal = (String) Utils.getUnsafe().getObject(object, offset);
     writer.write(strVal);
@@ -29,9 +25,6 @@ public class UnsafeStringField extends UnsafeField{
   public Object read(Object object) {
     if(reader == null) {
       reader = new StringColumnReader(picklePot.getInput());
-    }
-    if(directAccess) {
-      return reader.read();
     }
     String strVal = (String) reader.read();
     Utils.getUnsafe().putObject(object, offset, strVal);
