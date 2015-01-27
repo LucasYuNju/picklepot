@@ -15,7 +15,7 @@ public class PicklePotTest extends Template{
   List objects;
 
   public PicklePotTest(int repeations) {
-    super("newpicklepot+snappy", repeations);
+    super("picklepot+snappy", repeations);
   }
 
   @Override

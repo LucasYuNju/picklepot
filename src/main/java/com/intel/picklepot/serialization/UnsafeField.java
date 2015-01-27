@@ -15,27 +15,29 @@ public abstract class UnsafeField implements Serializable{
   protected transient PicklePotImpl picklePot;
 
   /**
-   * @param clazz
-   * @param offset
-   * @param picklepot
+   * @param clazz field type
+   * @param offset field offset
    */
-  public UnsafeField(Class clazz, long offset, PicklePotImpl picklepot) {
+  public UnsafeField(Class clazz, long offset) {
     this.clazz = clazz;
     this.offset = offset;
-    this.picklePot = picklepot;
   }
 
-  /**
-   * @param object
-   * write object itself into outputstream. This is a special implementation.
-   */
-  public abstract void write(Object object) throws PicklePotException;
+  public void write(Object object) throws PicklePotException {
+    if(writer == null) {
+      throw new PicklePotException("writer not initialized");
+    }
+    Object fieldObj = Utils.unsafe().getObject(object, offset);
+    writer.write(fieldObj);
+  }
 
-  /**
-   * @param object not used
-   * @return deserialized field object
-   */
-  public abstract Object read(Object object);
+  public void read(Object object) throws PicklePotException{
+    if(reader == null) {
+      throw new PicklePotException("reader not initialized");
+    }
+    Object fieldObj = reader.read();
+    Utils.unsafe().putObject(object, offset, fieldObj);
+  }
 
   public void flush() {
     writer.writeToBlock();

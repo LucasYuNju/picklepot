@@ -1,22 +1,33 @@
 package com.intel.picklepot.serialization;
 
-import com.intel.picklepot.PicklePotImpl;
-
 public class UnsafeFieldFactory {
-  public static UnsafeField getUnsafeField(Class clazz, Object object, long offset, PicklePotImpl picklePot) {
+  /**
+   * object may be auto-boxed, and it's probable that clazz != object.getClass().
+   * @param clazz field type
+   * @param object one of field objects
+   * @param offset field offset
+   * @return
+   */
+  public static UnsafeField getUnsafeField(Class clazz, Object object, long offset) {
     switch (Type.get(object.getClass())) {
       case INT:
-        return new UnsafeIntField(clazz, offset, picklePot);
+        return new UnsafeIntField(clazz, offset);
       case STRING:
-        return new UnsafeStringField(clazz, offset, picklePot);
+        return new UnsafeStringField(clazz, offset);
+      case LONG:
+        return new UnsafeLongField(clazz, offset);
+      case FLOAT:
+        return new UnsafeFloatField(clazz, offset);
+      case DOUBLE:
+        return new UnsafeDoubleField(clazz, offset);
       case ARRAY:
-        return new UnsafeArrayField(clazz, offset, picklePot);
+        return new UnsafeArrayField(clazz, offset);
       case NESTED:
-        return new UnsafeNestedField(object, offset, picklePot);
+        return new UnsafeNestedField(object, offset);
       case UNSUPPORTED:
-        return new UnsafeUnsupportedField(clazz, offset, picklePot);
+        return new UnsafeUnsupportedField(clazz, offset);
       default:
-        throw new IllegalArgumentException("called with wrong TYPE:" + Type.get(object.getClass()));
+        throw new IllegalArgumentException("object is of wrong TYPE:" + Type.get(object.getClass()));
     }
   }
 }

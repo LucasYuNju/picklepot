@@ -1,4 +1,4 @@
-package com.intel.picklepot.column.values;
+package com.intel.picklepot.column;
 
 import parquet.column.values.ValuesReader;
 

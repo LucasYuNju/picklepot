@@ -1,31 +1,29 @@
 package com.intel.picklepot.serialization;
 
-import com.intel.picklepot.PicklePotImpl;
-import com.intel.picklepot.column.ArrayColumnReader;
-import com.intel.picklepot.column.ArrayColumnWriter;
+import com.intel.picklepot.column.Readers;
+import com.intel.picklepot.column.Writers;
 import com.intel.picklepot.exception.PicklePotException;
 
 public class UnsafeArrayField extends UnsafeField{
 
-  public UnsafeArrayField(Class clazz, long offset, PicklePotImpl picklepot) {
-    super(clazz, offset, picklepot);
+  public UnsafeArrayField(Class clazz, long offset) {
+    super(clazz, offset);
   }
 
   @Override
   public void write(Object object) throws PicklePotException {
     if(writer == null) {
-      writer = new ArrayColumnWriter(picklePot.getOutput(), clazz);
+      writer = new Writers.ArrayColumnWriter(picklePot.getOutput(), clazz);
     }
-    Object writeVal = Utils.getUnsafe().getObject(object, offset);
+    Object writeVal = Utils.unsafe().getObject(object, offset);
     writer.write(writeVal);
   }
 
   @Override
-  public Object read(Object object) {
+  public void read(Object object) {
     if(reader == null) {
-      this.reader = new ArrayColumnReader(picklePot.getInput(), clazz);
+      this.reader = new Readers.ArrayColumnReader(picklePot.getInput(), clazz);
     }
-    Utils.getUnsafe().putObject(object, offset, reader.read());
-    return object;
+    Utils.unsafe().putObject(object, offset, reader.read());
   }
 }

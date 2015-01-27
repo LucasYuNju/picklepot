@@ -29,8 +29,8 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   public PicklePotImpl(InputStream is) {
     input = new SimpleDataInput(is);
     fieldGroup = input.readFieldGroup();
-    count = fieldGroup.getNumVals();
     fieldGroup.setPicklePot(this);
+    count = fieldGroup.getNumVals();
     instantiators = new HashMap<Class, ObjectInstantiator>();
     instantiators.put(fieldGroup.getClazz(), new ObjenesisStd().getInstantiatorOf(fieldGroup.getClazz()));
   }
@@ -46,7 +46,8 @@ public class PicklePotImpl<T> implements PicklePot<T>{
       throw new PicklePotException("Null object added");
     }
     if(fieldGroup == null) {
-      fieldGroup = new FieldGroup(obj, this);
+      fieldGroup = new FieldGroup(obj);
+      fieldGroup.setPicklePot(this);
     }
     fieldGroup.write(obj);
     return ++count;

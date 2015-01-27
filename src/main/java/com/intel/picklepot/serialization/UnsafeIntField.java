@@ -1,43 +1,41 @@
 package com.intel.picklepot.serialization;
 
-import com.intel.picklepot.PicklePotImpl;
-import com.intel.picklepot.column.IntColumnReader;
-import com.intel.picklepot.column.IntColumnWriter;
+import com.intel.picklepot.column.Readers;
+import com.intel.picklepot.column.Writers;
 import com.intel.picklepot.exception.PicklePotException;
 
 public class UnsafeIntField extends UnsafeField{
 
-  public UnsafeIntField(Class clazz, long offset, PicklePotImpl picklePot) {
-    super(clazz, offset, picklePot);
+  public UnsafeIntField(Class clazz, long offset) {
+    super(clazz, offset);
   }
 
   @Override
   public void write(Object object) throws PicklePotException {
     if(writer == null) {
-      writer = new IntColumnWriter(picklePot.getOutput());
+      writer = new Writers.IntColumnWriter(picklePot.getOutput());
     }
     Integer intVal;
     if(clazz == int.class) {
-      intVal = Utils.getUnsafe().getInt(object, offset);
+      intVal = Utils.unsafe().getInt(object, offset);
     }
     else {
-      intVal = (Integer) Utils.getUnsafe().getObject(object, offset);
+      intVal = (Integer) Utils.unsafe().getObject(object, offset);
     }
     writer.write(intVal);
   }
 
   @Override
-  public Object read(Object object) {
+  public void read(Object object) {
     if(reader == null) {
-      reader = new IntColumnReader(picklePot.getInput());
+      reader = new Readers.IntColumnReader(picklePot.getInput());
     }
     Integer intVal = (Integer) reader.read();
     if(clazz == int.class) {
-      Utils.getUnsafe().putInt(object, offset, intVal);
+      Utils.unsafe().putInt(object, offset, intVal);
     }
     else {
-      Utils.getUnsafe().putObject(object, offset, intVal);
+      Utils.unsafe().putObject(object, offset, intVal);
     }
-    return object;
   }
 }

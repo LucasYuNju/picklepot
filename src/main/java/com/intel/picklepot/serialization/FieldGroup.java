@@ -21,7 +21,7 @@ public class FieldGroup implements Serializable {
   //record how many objs has been serialized
   private long numVals;
 
-  public FieldGroup(Object object, PicklePotImpl picklePot) {
+  public FieldGroup(Object object) {
     this.clazz = object.getClass();
     if(Type.get(clazz) == Type.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
@@ -39,8 +39,10 @@ public class FieldGroup implements Serializable {
         }
         field.setAccessible(accessible);
 
-        long offset = Utils.getUnsafe().objectFieldOffset(field);
-        unsafeFieldList.add(UnsafeFieldFactory.getUnsafeField(field.getType(), fieldObj, offset, picklePot));
+        long offset = Utils.unsafe().objectFieldOffset(field);
+        //considering generic field and autoboxing, one of fieldObj.getClass() and field.getTypr() is the real class.
+        Class fieldClass = field.getType() == Object.class ? fieldObj.getClass() : field.getType();
+        unsafeFieldList.add(UnsafeFieldFactory.getUnsafeField(fieldClass, fieldObj, offset));
       }
       unsafeFields = new UnsafeField[unsafeFieldList.size()];
       for(int i=0; i<unsafeFields.length; i++) {
@@ -50,8 +52,8 @@ public class FieldGroup implements Serializable {
     else {
       try {
         Field retField = FieldGroup.class.getDeclaredField("ret");
-        long offset = Utils.getUnsafe().objectFieldOffset(retField);
-        unsafeFields = new UnsafeField[] {UnsafeFieldFactory.getUnsafeField(object.getClass(), object, offset, picklePot)};
+        long offset = Utils.unsafe().objectFieldOffset(retField);
+        unsafeFields = new UnsafeField[] {UnsafeFieldFactory.getUnsafeField(object.getClass(), object, offset)};
       } catch (NoSuchFieldException e) {
         e.printStackTrace();
       }
@@ -70,13 +72,13 @@ public class FieldGroup implements Serializable {
     }
   }
 
-  public void read(Object object) {
+  public void read(Object object) throws PicklePotException{
     for(UnsafeField field : unsafeFields) {
       field.read(object);
     }
   }
 
-  public Object read() {
+  public Object read() throws PicklePotException{
     unsafeFields[0].read(this);
     return ret;
   }
@@ -88,7 +90,7 @@ public class FieldGroup implements Serializable {
   }
 
   /**
-   * TODO effiency
+   * TODO effiency problem?
    */
   public boolean isNested() {
     return Type.get(clazz) == Type.NESTED;

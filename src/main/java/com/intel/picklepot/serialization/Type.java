@@ -4,9 +4,11 @@ import com.google.common.primitives.Primitives;
 import parquet.schema.PrimitiveType;
 
 public enum Type {
-//  FLOAT(PrimitiveType.PrimitiveTypeName.FLOAT),
-//
-//  LONG(PrimitiveType.PrimitiveTypeName.INT64),
+  DOUBLE(PrimitiveType.PrimitiveTypeName.DOUBLE),
+
+  FLOAT(PrimitiveType.PrimitiveTypeName.FLOAT),
+
+  LONG(PrimitiveType.PrimitiveTypeName.INT64),
 
   INT(PrimitiveType.PrimitiveTypeName.INT32),
 
@@ -44,6 +46,15 @@ public enum Type {
     }
     if(clazz == Integer.class || clazz == int.class) {
       return INT;
+    }
+    if(clazz == long.class || clazz == Long.class) {
+      return LONG;
+    }
+    if(clazz == float.class || clazz == Float.class) {
+      return FLOAT;
+    }
+    if(clazz == double.class || clazz == Double.class) {
+      return DOUBLE;
     }
     if(clazz.isArray()) {
       Type componentType = get(clazz.getComponentType());

@@ -4,40 +4,49 @@ import com.intel.picklepot.exception.PicklePotException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 
-public class SimpleTest implements Serializable{
-  Integer[] array = new Integer[] {1, 2, 3};
-  Pair p;
+public class SimpleTest<T> implements Serializable{
+  long l;
+  float f;
+  double d;
+  String s;
+  Integer[] a;
+  T t;
 
-  public SimpleTest(String a, int b) {
-    p = new Pair(a, b);
+  public void init(int val, T t) {
+    l = val;
+    f = val + 0.1f;
+    d = f;
+    s = "a" + val;
+    a = new Integer[]{val, val};
+    this.t = t;
   }
 
   public static void testPiclePot() throws PicklePotException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+    SimpleTest<Object> obj = new SimpleTest<Object>();
+    obj.init(1, new Pair("a", 123));
     PicklePotImpl<Object> picklePot = new PicklePotImpl<Object>(baos, null);
-    picklePot.write(new SimpleTest("a", 1));
-    picklePot.write(new SimpleTest("bbb", 2));
+    picklePot.write(obj);
+    picklePot.write(obj);
     picklePot.flush();
     picklePot.close();
 
     PicklePotImpl picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
-    Object obj = picklepot.read();
-    System.out.println(obj);
-    obj = picklepot.read();
-    System.out.println(obj);
+    Object restored = picklepot.read();
+    System.out.println(restored);
+    restored = picklepot.read();
+    System.out.println(restored);
   }
 
   public static void testNonNested() throws PicklePotException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
     PicklePotImpl<Object> picklePot = new PicklePotImpl<Object>(baos, null);
-    picklePot.write("aaa");
-    picklePot.write("bbb");
+    picklePot.write(1.1);
+    picklePot.write(1.1);
     picklePot.flush();
     picklePot.close();
 
@@ -48,10 +57,9 @@ public class SimpleTest implements Serializable{
     System.out.println(obj);
   }
 
-
   public static void main(String args[]) throws Exception {
     try {
-//      testPiclePot();
+      testPiclePot();
       testNonNested();
     } catch (PicklePotException e) {
       e.printStackTrace();

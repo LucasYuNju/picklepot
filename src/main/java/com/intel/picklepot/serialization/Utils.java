@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 public class Utils {
   private static Unsafe unsafe;
 
-  public static Unsafe getUnsafe() {
+  public static Unsafe unsafe() {
     if(unsafe == null) {
       try {
         Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
