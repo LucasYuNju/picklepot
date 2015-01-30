@@ -1,5 +1,6 @@
 package com.intel.picklepot.io;
 
+import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.format.Block;
 import com.intel.picklepot.serialization.FieldGroup;
 
@@ -13,43 +14,40 @@ import java.io.ObjectInputStream;
 public class SimpleDataInput implements DataInput {
   private ObjectInputStream in;
 
-  public SimpleDataInput(InputStream inputStream) {
+  public SimpleDataInput(InputStream inputStream) throws PicklePotException {
     try {
       in = new ObjectInputStream(inputStream);
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new PicklePotException(e);
     }
   }
 
   @Override
-  public Block readBlock() {
+  public Block readBlock() throws PicklePotException {
     try {
       return (Block)in.readObject();
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new PicklePotException(e);
     }
-    return null;
   }
 
   @Override
-  public FieldGroup readFieldGroup() {
-    FieldGroup ret = null;
+  public FieldGroup readFieldGroup() throws PicklePotException {
     try {
-      ret = (FieldGroup) in.readObject();
+      return (FieldGroup) in.readObject();
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new PicklePotException(e);
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      throw new PicklePotException(e);
     }
-    return ret;
   }
 
   @Override
-  public void close() {
+  public void close() throws PicklePotException {
     try {
       in.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new PicklePotException(e);
     }
   }
 }

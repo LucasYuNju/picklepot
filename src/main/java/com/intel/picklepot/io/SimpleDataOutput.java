@@ -29,7 +29,7 @@ public class SimpleDataOutput implements DataOutput {
       e.printStackTrace();
     }
   }
-
+                                                                                                                                                          
   @Override
   public void writeBlock(Block dataBlock) {
     try {

@@ -51,5 +51,5 @@ public interface PicklePot<T> {
    */
   public void close();
 
-
+  public boolean hasNext();
 }

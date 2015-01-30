@@ -80,6 +80,7 @@ public class Statistics {
     private String clerk;
     private int shipProprity;
     //skip comment column
+    private String comment;
 
     public Order(String line) {
       String[] values = line.split("\\|");
@@ -90,6 +91,7 @@ public class Statistics {
       orderPriority = values[5];
       clerk = values[6];
       shipProprity = Integer.parseInt(values[7]);
+      comment = values[8];
     }
 
     public Order() {}

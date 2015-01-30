@@ -3,13 +3,14 @@ package com.intel.picklepot.perf;
 import java.util.Iterator;
 
 public abstract class Template {
-  byte[] serialized;
-  byte[] compressed;
-  Iterator restored;
-  String name;
-  int repeations;
-  long serialTimeNanos;
-  long deserialTimeNanos;
+  protected String name;
+  protected int repeations;
+  protected byte[] serialized;
+  protected byte[] compressed;
+  protected Iterator restored;
+  protected long serialTimeNanos;
+  protected long deserialTimeNanos;
+  protected long compressedSize;
 
   public Template(String name, int repeations) {
     this.name = name;
@@ -23,6 +24,8 @@ public abstract class Template {
         long startTime = System.nanoTime();
         serialize();
         serialTimeNanos += System.nanoTime() - startTime;
+        compressedSize = compressed.length;
+        compressed = null;
         System.gc();
       }
       serialTimeNanos /= repeations;
@@ -32,13 +35,13 @@ public abstract class Template {
         long startTime = System.nanoTime();
         deserialize();
         deserialTimeNanos += System.nanoTime() - startTime;
+        if (!verifyDeserialized()) {
+          System.err.println("deserialization fault");
+        }
         System.gc();
       }
       deserialTimeNanos /= repeations;
 
-      if (!verifyDeserialized()) {
-        System.err.println("deserialization fault");
-      }
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -52,16 +55,10 @@ public abstract class Template {
 //            InputUtils.getDataSize() * 1000 / serialTimeNanos,
 //            deserialTimeNanos / 1000000,
 //            InputUtils.getDataSize() * 1000 / deserialTimeNanos);
-    System.out.printf("size:%,d code time:%,dms decode time:%,dms\n", compressed.length, serialTimeNanos/1000000, deserialTimeNanos/1000000);
+    System.out.printf("size:%,d code time:%,dms decode time:%,dms\n", compressedSize, serialTimeNanos/1000000, deserialTimeNanos/1000000);
     serialized = null;
     compressed = null;
     restored = null;
-  }
-
-  private long getSerialiedSize() {
-    if(serialized == null)
-      return 0;
-    return serialized.length;
   }
 
   protected abstract void serialize() throws Exception;

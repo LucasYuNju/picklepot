@@ -9,7 +9,7 @@ public class UnsafeFieldFactory {
    * @return
    */
   public static UnsafeField getUnsafeField(Class clazz, Object object, long offset) {
-    switch (Type.get(object.getClass())) {
+    switch (Type.get(clazz)) {
       case INT:
         return new UnsafeIntField(clazz, offset);
       case STRING:

@@ -21,6 +21,31 @@ public class FieldGroup implements Serializable {
   //record how many objs has been serialized
   private long numVals;
 
+  /**TODO for test;
+   * Field offset varies on different JVM(?), it's necessary to update offset after FieldGroup is deserialized
+   */
+  public void updateOffset() throws PicklePotException {
+    if(Type.get(clazz) == Type.NESTED) {
+      Field[] fields = clazz.getDeclaredFields();
+      int i = 0;
+      for (Field field : fields) {
+        if (Modifier.isStatic(field.getModifiers()))
+          continue;
+        long offset = Utils.unsafe().objectFieldOffset(field);
+        unsafeFields[i++].updateOffset(offset);
+      }
+    }
+    else {
+      try {
+        Field retField = FieldGroup.class.getDeclaredField("ret");
+        long offset = Utils.unsafe().objectFieldOffset(retField);
+        unsafeFields[0].updateOffset(offset);
+      } catch (NoSuchFieldException e) {
+        throw new PicklePotException(e);
+      }
+    }
+  }
+
   public FieldGroup(Object object) {
     this.clazz = object.getClass();
     if(Type.get(clazz) == Type.NESTED) {
@@ -40,7 +65,7 @@ public class FieldGroup implements Serializable {
         field.setAccessible(accessible);
 
         long offset = Utils.unsafe().objectFieldOffset(field);
-        //considering generic field and autoboxing, one of fieldObj.getClass() and field.getTypr() is the real class.
+        //considering generic field and autoboxing, one of fieldObj.getClass() and field.getType() is the real class.
         Class fieldClass = field.getType() == Object.class ? fieldObj.getClass() : field.getType();
         unsafeFieldList.add(UnsafeFieldFactory.getUnsafeField(fieldClass, fieldObj, offset));
       }
@@ -58,6 +83,7 @@ public class FieldGroup implements Serializable {
         e.printStackTrace();
       }
     }
+
   }
 
   public void write(Object object) throws PicklePotException {
@@ -90,7 +116,7 @@ public class FieldGroup implements Serializable {
   }
 
   /**
-   * TODO effiency problem?
+   * TODO any effiency problem?
    */
   public boolean isNested() {
     return Type.get(clazz) == Type.NESTED;
@@ -116,5 +142,22 @@ public class FieldGroup implements Serializable {
 
   public void setNumvals(long numvals) {
     this.numVals = numvals;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("[");
+    if(!isNested()) {
+      builder.append("N*");
+    }
+    for(int i=0; i<unsafeFields.length; i++) {
+      if(i != 0) {
+        builder.append(",");
+      }
+      builder.append(unsafeFields[i].toString());
+    }
+    builder.append("]");
+    return builder.toString();
   }
 }

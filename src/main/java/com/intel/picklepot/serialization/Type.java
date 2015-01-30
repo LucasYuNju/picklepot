@@ -62,7 +62,7 @@ public enum Type {
         return ARRAY;
       }
     }
-    if(clazz.isPrimitive() || Primitives.isWrapperType(clazz) || clazz.isArray()) {
+    if(clazz.isPrimitive() || Primitives.isWrapperType(clazz) || clazz.isArray() || Utils.isException(clazz)) {
       return UNSUPPORTED;
     }
     return NESTED;

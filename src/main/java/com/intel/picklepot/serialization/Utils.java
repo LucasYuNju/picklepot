@@ -1,11 +1,23 @@
 package com.intel.picklepot.serialization;
 
+import com.intel.picklepot.Pair;
+import org.apache.spark.SerializableWritable;
+import org.apache.spark.scheduler.MapStatus;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Utils {
   private static Unsafe unsafe;
+  private static Set<Class> exceptions = new HashSet<Class>();
+
+  static {
+//    exceptions.add(MapStatus.class);
+    exceptions.add(SerializableWritable.class);
+//    exceptions.add(Pair.class);
+  }
 
   public static Unsafe unsafe() {
     if(unsafe == null) {
@@ -20,5 +32,9 @@ public class Utils {
       }
     }
     return unsafe;
+  }
+
+  public static boolean isException(Class clazz) {
+    return exceptions.contains(clazz);
   }
 }

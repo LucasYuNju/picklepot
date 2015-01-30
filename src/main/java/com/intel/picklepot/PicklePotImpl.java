@@ -9,6 +9,7 @@ import com.intel.picklepot.serialization.FieldGroup;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
 
+import java.io.EOFException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class PicklePotImpl<T> implements PicklePot<T>{
-  private volatile long count = 0;
+  private long count = 0;
   private FieldGroup fieldGroup;
   private DataInput input;
   private DataOutput output;
@@ -26,10 +27,11 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     output = new SimpleDataOutput(os);
   }
 
-  public PicklePotImpl(InputStream is) {
+  public PicklePotImpl(InputStream is) throws PicklePotException {
     input = new SimpleDataInput(is);
     fieldGroup = input.readFieldGroup();
     fieldGroup.setPicklePot(this);
+    fieldGroup.updateOffset();
     count = fieldGroup.getNumVals();
     instantiators = new HashMap<Class, ObjectInstantiator>();
     instantiators.put(fieldGroup.getClazz(), new ObjenesisStd().getInstantiatorOf(fieldGroup.getClazz()));
@@ -55,10 +57,11 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
   @Override
   public long write(Iterator<T> ite) throws PicklePotException {
-    while(ite.hasNext()) {
-      write(ite.next());
-    }
-    return count;
+    throw new UnsupportedOperationException();
+//    while(ite.hasNext()) {
+//      write(ite.next());
+//    }
+//    return count;
   }
 
   @Override
@@ -71,12 +74,13 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
   @Override
   public T read() throws PicklePotException{
-    if(count-- < 0) {
-      return null;
+    if(!hasNext()) {
+      throw new PicklePotException(new EOFException());
     }
     if(input == null) {
       throw new PicklePotException("not initialized");
     }
+    count--;
     if(fieldGroup.isNested()) {
       Object obj = instantiators.get(fieldGroup.getClazz()).newInstance();
       fieldGroup.read(obj);
@@ -90,9 +94,15 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   @Override
   public void close() {
     count = 0;
-    output.close();
+//    if(input != null) {
+//      input.close();
+//    }
+    if(output != null) {
+      output.close();
+    }
   }
 
+  @Override
   public boolean hasNext() {
     return count > 0;
   }
@@ -111,4 +121,14 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   public DataOutput getOutput() {
     return output;
   }
+
+  @Override
+  public String toString() {
+    if(fieldGroup != null) {
+      return fieldGroup.toString();
+    }
+    return "";
+  }
+
+
 }

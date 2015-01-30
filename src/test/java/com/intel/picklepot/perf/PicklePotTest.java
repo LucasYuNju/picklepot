@@ -24,11 +24,14 @@ public class PicklePotTest extends Template{
     picklePot = new PicklePotImpl<Object>(outputStream, null);
 
     objects = InputUtils.getObjects();
-    picklePot.write(objects.iterator());
+    for(Object obj : objects) {
+      picklePot.write(obj);
+    }
     picklePot.flush();
     picklePot.close();
     serialized = outputStream.toByteArray();
     compressed = Snappy.compress(serialized);
+    picklePot = null;
   }
 
   @Override
@@ -39,6 +42,7 @@ public class PicklePotTest extends Template{
       list.add(picklePot.read());
     }
     restored = list.iterator();
+    picklePot = null;
   }
 
   @Override
@@ -47,6 +51,7 @@ public class PicklePotTest extends Template{
       if(!restored.hasNext() || !restored.next().equals(p))
         return false;
     }
+    restored = null;
     return true;
   }
 }

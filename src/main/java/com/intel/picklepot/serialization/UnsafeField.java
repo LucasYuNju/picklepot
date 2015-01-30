@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public abstract class UnsafeField implements Serializable{
   protected Class clazz;
-  protected long offset;
+  protected transient long offset;
   protected transient ColumnWriter writer;
   protected transient ColumnReader reader;
   protected transient PicklePotImpl picklePot;
@@ -45,5 +45,14 @@ public abstract class UnsafeField implements Serializable{
 
   public void setPicklePot(PicklePotImpl picklePot) {
     this.picklePot = picklePot;
+  }
+
+  @Override
+  public String toString() {
+    return Type.get(clazz) + ":" + clazz.getName();
+  }
+
+  public void updateOffset(long offset) throws PicklePotException {
+    this.offset = offset;
   }
 }

@@ -25,6 +25,7 @@ public class NativeTest extends Template {
     objOutputStream.close();
     serialized = outputStream.toByteArray();
     compressed = Snappy.compress(serialized);
+    objOutputStream = null;
   }
 
   @Override
@@ -35,6 +36,7 @@ public class NativeTest extends Template {
     for(int i=0; i<num; i++) {
       pairs.add(inputStream.readObject());
     }
+    inputStream = null;
   }
 
   @Override

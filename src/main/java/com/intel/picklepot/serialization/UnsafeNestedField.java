@@ -38,4 +38,18 @@ public class UnsafeNestedField extends UnsafeField {
     super.setPicklePot(picklePot);
     group.setPicklePot(picklePot);
   }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append(super.toString());
+    builder.append(group.toString());
+    return builder.toString();
+  }
+
+  @Override
+  public void updateOffset(long offset) throws PicklePotException {
+    super.updateOffset(offset);
+    group.updateOffset();
+  }
 }

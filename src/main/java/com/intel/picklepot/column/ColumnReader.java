@@ -1,5 +1,6 @@
 package com.intel.picklepot.column;
 
+import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.format.Block;
 import com.intel.picklepot.io.DataInput;
 import com.intel.picklepot.serialization.Type;
@@ -22,7 +23,7 @@ public abstract class ColumnReader {
   public ColumnReader() {
   }
 
-  public ColumnReader(DataInput input, Type type) {
+  public ColumnReader(DataInput input, Type type) throws PicklePotException {
     this.dataBlock = input.readBlock();
     Encoding encoding = dataBlock.getEncoding();
     ColumnDescriptor descriptor = new ColumnDescriptor(new String[] {""}, type.toParquetType(), 0, 0);

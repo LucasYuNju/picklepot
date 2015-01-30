@@ -35,6 +35,7 @@ public class KryoTest extends Template{
     output.close();
     serialized = outputStream.toByteArray();
     compressed = Snappy.compress(serialized);
+    kryo = null;
   }
 
   @Override
@@ -46,6 +47,7 @@ public class KryoTest extends Template{
     for(int i=0; i<size; i++) {
       deserialized.add(kryo.readObject(input, clazz));
     }
+    kryo = null;
   }
 
   @Override

@@ -26,7 +26,7 @@ public class UnsafeIntField extends UnsafeField{
   }
 
   @Override
-  public void read(Object object) {
+  public void read(Object object) throws PicklePotException {
     if(reader == null) {
       reader = new Readers.IntColumnReader(picklePot.getInput());
     }

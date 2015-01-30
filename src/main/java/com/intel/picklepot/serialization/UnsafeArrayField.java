@@ -20,7 +20,7 @@ public class UnsafeArrayField extends UnsafeField{
   }
 
   @Override
-  public void read(Object object) {
+  public void read(Object object) throws PicklePotException {
     if(reader == null) {
       this.reader = new Readers.ArrayColumnReader(picklePot.getInput(), clazz);
     }

@@ -16,16 +16,22 @@
 
   <dependencies>
       <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-core_2.10</artifactId>
+          <version>1.1.1</version>
+      </dependency>
+
+      <dependency>
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
           <version>14.0.1</version>
       </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
-      <scope>test</scope>
-    </dependency>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.8.2</version>
+          <scope>test</scope>
+      </dependency>
       <dependency>
           <groupId>com.esotericsoftware.kryo</groupId>
           <artifactId>kryo</artifactId>
@@ -74,6 +80,11 @@
           <artifactId>scala-library</artifactId>
           <version>2.10.4</version>
       </dependency>
+      <dependency>
+          <groupId>com.sparkjava</groupId>
+          <artifactId>spark-core</artifactId>
+          <version>1.1.1</version>
+      </dependency>
   </dependencies>
 
     <build>
@@ -94,7 +105,7 @@
                     <version>2.18</version>
                     <configuration>
                         <forkMode>pertest</forkMode>
-                        <argLine>-Xms1024m -Xmx4096m</argLine>
+                        <argLine>-Xms1024m -Xmx3072m</argLine>
                         <skip>false</skip>
                     </configuration>
                 </plugin>
