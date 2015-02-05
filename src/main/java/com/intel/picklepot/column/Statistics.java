@@ -71,16 +71,16 @@ public class Statistics {
 
 
   public static class Order implements Serializable {
-    private int orderKey;
-    private int custKey;
-    private String orderStatus;
+    public int orderKey;
+    public int custKey;
+    public String orderStatus;
     //skip price column
-    private String date;
-    private String orderPriority;
-    private String clerk;
-    private int shipProprity;
+    public String date;
+    public String orderPriority;
+    public String clerk;
+    public int shipProprity;
     //skip comment column
-    private String comment;
+    public String comment;
 
     public Order(String line) {
       String[] values = line.split("\\|");

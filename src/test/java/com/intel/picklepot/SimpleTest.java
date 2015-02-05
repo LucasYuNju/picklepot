@@ -1,18 +1,14 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
+import com.intel.picklepot.serialization.Utils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.spark.SerializableWritable;
-import org.apache.spark.scheduler.MapStatus;
-import org.apache.spark.storage.BlockManagerId;
-import scala.Array;
-import scala.Predef;
+import org.apache.spark.util.collection.CompactBuffer;
+import scala.Tuple2;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
+import java.io.*;
+import java.lang.reflect.Field;
 
 public class SimpleTest<T> implements Serializable{
   long l;
@@ -31,7 +27,7 @@ public class SimpleTest<T> implements Serializable{
     this.t = t;
   }
 
-  public static void testPiclePot() throws PicklePotException {
+  public static void testPiclePot() throws Exception {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
     SimpleTest<Object> obj = new SimpleTest<Object>();
@@ -41,6 +37,8 @@ public class SimpleTest<T> implements Serializable{
     picklePot.write(obj);
     picklePot.flush();
     picklePot.close();
+
+    System.out.println(baos.toByteArray().length);
 
     byte[] bytes = new byte[baos.toByteArray().length * 2];
     System.arraycopy(baos.toByteArray(), 0, bytes, 0, baos.toByteArray().length);
@@ -61,8 +59,6 @@ public class SimpleTest<T> implements Serializable{
     Object write;
     Configuration hadoopConf = new Configuration();
     hadoopConf.set("fs.s3.awsAccessKeyId", "AWS_ACCESS_KEY_ID");
-    hadoopConf.set("fs.s3n.awsAccessKeyId", "AWS_ACCESS_KEY_ID");
-    hadoopConf.set("fs.s3.awsSecretAccessKey", "AWS_SECRET_ACCESS_KEY");
     write = new SerializableWritable(hadoopConf);
 
     picklePot.write(write);
@@ -76,6 +72,7 @@ public class SimpleTest<T> implements Serializable{
     obj = picklepot.read();
     System.out.println(obj);
   }
+
 
   public static void main(String args[]) throws Exception {
     testPiclePot();

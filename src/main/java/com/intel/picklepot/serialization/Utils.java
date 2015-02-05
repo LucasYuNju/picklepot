@@ -1,8 +1,7 @@
 package com.intel.picklepot.serialization;
 
-import com.intel.picklepot.Pair;
 import org.apache.spark.SerializableWritable;
-import org.apache.spark.scheduler.MapStatus;
+import org.apache.spark.util.collection.CompactBuffer;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -16,7 +15,7 @@ public class Utils {
   static {
 //    exceptions.add(MapStatus.class);
     exceptions.add(SerializableWritable.class);
-//    exceptions.add(Pair.class);
+    exceptions.add(CompactBuffer.class);
   }
 
   public static Unsafe unsafe() {

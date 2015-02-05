@@ -135,5 +135,10 @@ public class Writers {
       lengthWriter.writeToBlock();
       compWriter.writeToBlock();
     }
+
+    @Override
+    public String toString() {
+      return "Array(" + lengthWriter.toString() + " " + compWriter.toString() + ")";
+    }
   }
 }

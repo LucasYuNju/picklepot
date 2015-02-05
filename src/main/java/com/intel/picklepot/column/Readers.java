@@ -146,5 +146,10 @@ public class Readers {
       }
       return ret;
     }
+
+    @Override
+    public String toString() {
+      return "Array(" + lengthReader.toString() + " " + compReader.toString() + ")";
+    }
   }
 }

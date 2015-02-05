@@ -50,4 +50,9 @@ public abstract class ColumnReader {
     }
     return null;
   }
+
+  @Override
+  public String toString() {
+    return dataBlock.getEncoding().toString();
+  }
 }

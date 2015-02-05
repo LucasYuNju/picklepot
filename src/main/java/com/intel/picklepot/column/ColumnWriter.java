@@ -23,6 +23,8 @@ public abstract class ColumnWriter {
 
   public void writeToBlock() {
     try {
+      //valuesWriter.getBytes() need to create a new Array and copy data.
+      //see also parquet.bytes.CapacityByteArrayOutputStream.
       byte[] dataBytes = valuesWriter.getBytes().toByteArray();
       Block dataBlock = new Block(valuesWriter.getEncoding(), numValues, dataBytes);
       output.writeBlock(dataBlock);
@@ -37,5 +39,10 @@ public abstract class ColumnWriter {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public String toString() {
+    return valuesWriter.getEncoding().toString();
   }
 }

@@ -49,7 +49,14 @@ public abstract class UnsafeField implements Serializable{
 
   @Override
   public String toString() {
-    return Type.get(clazz) + ":" + clazz.getName();
+    String prefix = Type.get(clazz) + "_" + clazz.getName() + " ";
+    if(writer != null) {
+      return prefix + writer.toString();
+    }
+    if(reader != null) {
+      return prefix + reader.toString();
+    }
+    return prefix;
   }
 
   public void updateOffset(long offset) throws PicklePotException {

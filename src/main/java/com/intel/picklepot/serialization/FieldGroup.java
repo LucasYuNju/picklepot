@@ -11,8 +11,8 @@ import java.util.List;
 
 /**
  * FieldGroup delgate actual serialization work to UnsafeFields.
- * If clazz is String(or is not Type.UNSUPPORTED), FieldGroup does not inspect the Fields inside String.
- * Instead, FieldGroup will work as if clazz contains a single String Field, and serialize Strings with UnsafeStringField.
+ * If clazz is not Type.NESTED(e.g., String), FieldGroup does not inspect the Fields inside it.
+ * Instead, FieldGroup will treat it as a class that contains a single String Field, and delegate work to UnsafeStringField.
  */
 public class FieldGroup implements Serializable {
   private transient Object ret;
@@ -21,8 +21,8 @@ public class FieldGroup implements Serializable {
   //record how many objs has been serialized
   private long numVals;
 
-  /**TODO for test;
-   * Field offset varies on different JVM(?), it's necessary to update offset after FieldGroup is deserialized
+  /**
+   * Field offset varies on different JVM, it's necessary to update offset after FieldGroup is deserialized
    */
   public void updateOffset() throws PicklePotException {
     if(Type.get(clazz) == Type.NESTED) {
@@ -153,7 +153,7 @@ public class FieldGroup implements Serializable {
     }
     for(int i=0; i<unsafeFields.length; i++) {
       if(i != 0) {
-        builder.append(",");
+        builder.append(", ");
       }
       builder.append(unsafeFields[i].toString());
     }

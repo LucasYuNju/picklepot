@@ -105,7 +105,7 @@
                     <version>2.18</version>
                     <configuration>
                         <forkMode>pertest</forkMode>
-                        <argLine>-Xms1024m -Xmx3072m</argLine>
+                        <argLine>-Xms1024m -Xmx3072m -XX:+PrintGCDetails</argLine>
                         <skip>false</skip>
                     </configuration>
                 </plugin>
