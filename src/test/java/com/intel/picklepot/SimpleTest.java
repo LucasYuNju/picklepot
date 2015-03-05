@@ -1,15 +1,10 @@
 package com.intel.picklepot;
 
-import com.intel.picklepot.exception.PicklePotException;
-import com.intel.picklepot.serialization.Utils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.spark.SerializableWritable;
-import org.apache.spark.util.collection.CompactBuffer;
-import scala.Tuple2;
+import org.junit.Test;
 
 import java.io.*;
-import java.lang.reflect.Field;
 
+//loaded 520 classes
 public class SimpleTest<T> implements Serializable{
   long l;
   float f;
@@ -27,55 +22,57 @@ public class SimpleTest<T> implements Serializable{
     this.t = t;
   }
 
-  public static void testPiclePot() throws Exception {
+  public void toFile() throws Exception {
+
+    for(int i=0; i<100000; i++) {
+      PicklePot picklepot = new PicklePotImpl(new FileInputStream("serialized"));
+      synchronized (this) {
+        while (picklepot.hasNext()) {
+          Object restored = picklepot.read();
+          System.out.println(restored);
+          wait(10);
+        }
+      }
+    }
+  }
+
+  public void testPiclePot() throws Exception {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    SimpleTest<Object> obj = new SimpleTest<Object>();
-    obj.init(1, new Pair("a", 123));
     PicklePot<Object> picklePot = new PicklePotImpl<Object>(baos, null);
-    picklePot.write(obj);
-    picklePot.write(obj);
-    picklePot.flush();
-    picklePot.close();
 
-    System.out.println(baos.toByteArray().length);
-
-    byte[] bytes = new byte[baos.toByteArray().length * 2];
-    System.arraycopy(baos.toByteArray(), 0, bytes, 0, baos.toByteArray().length);
-
-    PicklePot picklepot = new PicklePotImpl(new ByteArrayInputStream(bytes));
-    while(picklepot.hasNext()) {
-      Object restored = picklepot.read();
-      System.out.println(restored);
+    for(int i=0; i<100000; i++) {
+      SimpleTest<Object> obj = new SimpleTest<Object>();
+      obj.init(1, new Pair("a", 123));
+      picklePot.write(obj);
     }
 
-    System.out.println(picklepot.toString());
-  }
-
-  public static void testNonNested() throws PicklePotException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-    PicklePotImpl<Object> picklePot = new PicklePotImpl<Object>(baos, null);
-    Object write;
-    Configuration hadoopConf = new Configuration();
-    hadoopConf.set("fs.s3.awsAccessKeyId", "AWS_ACCESS_KEY_ID");
-    write = new SerializableWritable(hadoopConf);
-
-    picklePot.write(write);
-    picklePot.write(write);
     picklePot.flush();
     picklePot.close();
+    //1800B
 
-    PicklePotImpl picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
-    Object obj = picklepot.read();
-    System.out.println(obj);
-    obj = picklepot.read();
-    System.out.println(obj);
+    PicklePot picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    synchronized (this) {
+      while (picklepot.hasNext()) {
+        Object restored = picklepot.read();
+        System.out.println(restored);
+        wait(10);
+      }
+    }
   }
 
+  public void repeat() throws Exception {
+    synchronized (this) {
+      for (int i = 0; i < 10000; i++) {
+        testPiclePot();
+        toFile();
+        wait(10);
+      }
+    }
+  }
 
-  public static void main(String args[]) throws Exception {
-    testPiclePot();
-//    testNonNested();
+  @Test
+  public void main() throws Exception {
+      new SimpleTest().testPiclePot();
   }
 }

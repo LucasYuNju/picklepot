@@ -16,7 +16,7 @@ then
 fi
 
 #build and test
-BUILD_COMMAND="mvn -Dtest=TestPerf test"
+BUILD_COMMAND="mvn -Dtest=SimpleTest test"
 echo -e "\nTesting with..."
 echo -e "\$ $BUILD_COMMAND\n"
 

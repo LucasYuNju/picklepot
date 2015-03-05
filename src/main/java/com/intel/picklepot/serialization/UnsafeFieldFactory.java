@@ -9,7 +9,7 @@ public class UnsafeFieldFactory {
    * @return
    */
   public static UnsafeField getUnsafeField(Class clazz, Object object, long offset) {
-    switch (Type.get(clazz)) {
+    switch (Type.typeOf(clazz)) {
       case INT:
         return new UnsafeIntField(clazz, offset);
       case STRING:
@@ -27,7 +27,7 @@ public class UnsafeFieldFactory {
       case UNSUPPORTED:
         return new UnsafeUnsupportedField(clazz, offset);
       default:
-        throw new IllegalArgumentException("object is of wrong TYPE:" + Type.get(object.getClass()));
+        throw new IllegalArgumentException("object is of wrong TYPE:" + Type.typeOf(object.getClass()));
     }
   }
 }

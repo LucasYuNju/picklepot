@@ -10,7 +10,7 @@ public class Settings {
   public static int initialColSize;
 
   static {
-    config(true, 256 * 1024, 128 * 1024);
+    config(true, 256 * 1024, 64 * 1024);
   }
 
   public static void config(boolean enableDict, int dictBlockSizeThreshold, int initialSizePerCol) {

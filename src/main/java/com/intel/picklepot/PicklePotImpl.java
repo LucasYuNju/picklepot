@@ -21,7 +21,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   private FieldGroup fieldGroup;
   private DataInput input;
   private DataOutput output;
-  private Map<Class, ObjectInstantiator> instantiators;
+  private static Map<Class, ObjectInstantiator> instantiators;
 
   public PicklePotImpl(OutputStream os, Map configuration) {
     output = new SimpleDataOutput(os);
@@ -33,8 +33,6 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     fieldGroup.setPicklePot(this);
     fieldGroup.updateOffset();
     count = fieldGroup.getNumVals();
-    instantiators = new HashMap<Class, ObjectInstantiator>();
-    instantiators.put(fieldGroup.getClazz(), new ObjenesisStd().getInstantiatorOf(fieldGroup.getClazz()));
   }
 
   @Override
@@ -82,7 +80,7 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     }
     count--;
     if(fieldGroup.isNested()) {
-      Object obj = instantiators.get(fieldGroup.getClazz()).newInstance();
+      Object obj = instantiate(fieldGroup.getClazz());
       fieldGroup.read(obj);
       return (T) obj;
     }
@@ -108,6 +106,9 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   }
 
   public Object instantiate(Class clazz) {
+    if(instantiators == null) {
+      instantiators = new HashMap<Class, ObjectInstantiator>();
+    }
     if(!instantiators.containsKey(clazz)) {
       instantiators.put(clazz, new ObjenesisStd().getInstantiatorOf(clazz));
     }
@@ -129,6 +130,4 @@ public class PicklePotImpl<T> implements PicklePot<T>{
     }
     return "";
   }
-
-
 }

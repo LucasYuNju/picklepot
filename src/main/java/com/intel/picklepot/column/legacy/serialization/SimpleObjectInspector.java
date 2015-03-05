@@ -32,7 +32,7 @@ public class SimpleObjectInspector<T> implements ObjectInspector<T> {
         }
       } catch (IllegalAccessException e) {
         String fieldName = field.getName();
-        throw new PicklePotException("Failed to get field[" + fieldName + "] value.", e);
+        throw new PicklePotException("Failed to typeOf field[" + fieldName + "] value.", e);
       }
     }
   }

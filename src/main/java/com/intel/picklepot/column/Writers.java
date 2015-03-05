@@ -109,7 +109,7 @@ public class Writers {
       super(output);
       this.lengthWriter = new IntColumnWriter(output);
       Class compClazz = clazz.getComponentType();
-      switch (Type.get(compClazz)) {
+      switch (Type.typeOf(compClazz)) {
         case STRING:
           compWriter = new StringColumnWriter(output);
           break;

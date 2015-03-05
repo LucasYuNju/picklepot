@@ -54,7 +54,7 @@ public class KryoTest extends Template{
   protected boolean verifyDeserialized() throws Exception {
 //    List<Object> pairs = InputUtils.getObjects();
 //    for(int i=0; i<pairs.size(); i++) {
-//      if(!deserialized.get(i).equals(pairs.get(i))) {
+//      if(!deserialized.typeOf(i).equals(pairs.typeOf(i))) {
 //        return false;
 //      }
 //    }

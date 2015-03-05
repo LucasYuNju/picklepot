@@ -6,16 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TestPerf {
-  static final int REPETITION = 1;
-  static final int WARNUP = 0;
-  static final int RUN = 1;
+  static final int REPETITION = 2;
+  static final int WARNUP = 1;
+  static final int RUN = 2;
 
   @Test
   public void test() throws Exception {
     List<Template> tests = new LinkedList<Template>();
 //    tests.add(new NativeTest(REPETITION));
-//    tests.add(new KryoTest(REPETITION));
     tests.add(new PicklePotTest(REPETITION));
+    tests.add(new KryoTest(REPETITION));
 
     for(int i=0; i<WARNUP; i++) {
       for (Template t : tests) {

@@ -40,7 +40,7 @@ public enum Type {
     return parquetType;
   }
 
-  public static Type get(Class clazz) {
+  public static Type typeOf(Class clazz) {
     if(clazz == String.class) {
       return STRING;
     }
@@ -57,7 +57,7 @@ public enum Type {
       return DOUBLE;
     }
     if(clazz.isArray()) {
-      Type componentType = get(clazz.getComponentType());
+      Type componentType = typeOf(clazz.getComponentType());
       if(componentType != ARRAY && componentType != UNSUPPORTED && componentType != NESTED) {
         return ARRAY;
       }

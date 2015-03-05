@@ -3,21 +3,20 @@ package com.intel.picklepot.serialization;
 import com.intel.picklepot.PicklePotImpl;
 import com.intel.picklepot.exception.PicklePotException;
 
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FieldGroup delgate actual serialization work to UnsafeFields.
- * If clazz is not Type.NESTED(e.g., String), FieldGroup does not inspect the Fields inside it.
- * Instead, FieldGroup will treat it as a class that contains a single String Field, and delegate work to UnsafeStringField.
+ * FieldGroup distribute serialization work to UnsafeFields.
+ * If clazz is not Type.NESTED(e.g., String), FieldGroup does not inspect the Fields inside clazz.
  */
 public class FieldGroup implements Serializable {
   private transient Object ret;
+  private transient Class clazz;
   private UnsafeField[] unsafeFields;
-  private Class clazz;
   //record how many objs has been serialized
   private long numVals;
 
@@ -25,7 +24,7 @@ public class FieldGroup implements Serializable {
    * Field offset varies on different JVM, it's necessary to update offset after FieldGroup is deserialized
    */
   public void updateOffset() throws PicklePotException {
-    if(Type.get(clazz) == Type.NESTED) {
+    if(Type.typeOf(clazz) == Type.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
       int i = 0;
       for (Field field : fields) {
@@ -48,7 +47,7 @@ public class FieldGroup implements Serializable {
 
   public FieldGroup(Object object) {
     this.clazz = object.getClass();
-    if(Type.get(clazz) == Type.NESTED) {
+    if(Type.typeOf(clazz) == Type.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
       List<UnsafeField> unsafeFieldList = new ArrayList<UnsafeField>();
       for (Field field : fields) {
@@ -83,7 +82,6 @@ public class FieldGroup implements Serializable {
         e.printStackTrace();
       }
     }
-
   }
 
   public void write(Object object) throws PicklePotException {
@@ -115,11 +113,8 @@ public class FieldGroup implements Serializable {
     }
   }
 
-  /**
-   * TODO any effiency problem?
-   */
   public boolean isNested() {
-    return Type.get(clazz) == Type.NESTED;
+    return Type.typeOf(clazz) == Type.NESTED;
   }
 
   public Class getClazz() {
@@ -159,5 +154,16 @@ public class FieldGroup implements Serializable {
     }
     builder.append("]");
     return builder.toString();
+  }
+
+  private void writeObject(ObjectOutputStream stream) throws IOException{
+    stream.defaultWriteObject();
+    stream.writeObject(clazz.getName());
+  }
+
+  private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+    stream.defaultReadObject();
+    String className = (String) stream.readObject();
+    this.clazz = Utils.resolveClass(className);
   }
 }

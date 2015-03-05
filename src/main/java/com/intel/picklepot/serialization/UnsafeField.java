@@ -5,10 +5,13 @@ import com.intel.picklepot.column.ColumnReader;
 import com.intel.picklepot.column.ColumnWriter;
 import com.intel.picklepot.exception.PicklePotException;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public abstract class UnsafeField implements Serializable{
-  protected Class clazz;
+  protected transient Class clazz;
   protected transient long offset;
   protected transient ColumnWriter writer;
   protected transient ColumnReader reader;
@@ -49,7 +52,7 @@ public abstract class UnsafeField implements Serializable{
 
   @Override
   public String toString() {
-    String prefix = Type.get(clazz) + "_" + clazz.getName() + " ";
+    String prefix = Type.typeOf(clazz) + "_" + clazz.getName() + " ";
     if(writer != null) {
       return prefix + writer.toString();
     }
@@ -61,5 +64,16 @@ public abstract class UnsafeField implements Serializable{
 
   public void updateOffset(long offset) throws PicklePotException {
     this.offset = offset;
+  }
+
+  private void writeObject(ObjectOutputStream stream) throws IOException {
+    stream.defaultWriteObject();
+    stream.writeObject(clazz.getName());
+  }
+
+  private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+    stream.defaultReadObject();
+    String className = (String) stream.readObject();
+    this.clazz = Utils.resolveClass(className);
   }
 }

@@ -82,11 +82,11 @@
 //    ObjectInstantiator instantiator = objenesis.getInstantiatorOf(clazz);
 //    List<T> result = new LinkedList<T>();
 //    if(!dataInput.getClassInfo().isSerializedWithJava()) {
-//      while(!readers.isEmpty() && readers.get(0).hasNext()) {
+//      while(!readers.isEmpty() && readers.typeOf(0).hasNext()) {
 //        try {
 //          T object = (T) instantiator.newInstance();
 //          for (int i = 0; i < fields.length; i++) {
-//            fields[i].set(object, readers.get(i).read());
+//            fields[i].set(object, readers.typeOf(i).read());
 //          }
 //          result.add(object);
 //        } catch (IllegalAccessException e) {
@@ -95,7 +95,7 @@
 //      }
 //    }
 //    else {
-//      ColumnReader soleReader = readers.get(0);
+//      ColumnReader soleReader = readers.typeOf(0);
 //      while(soleReader.hasNext()) {
 //        result.add((T) soleReader.read());
 //      }

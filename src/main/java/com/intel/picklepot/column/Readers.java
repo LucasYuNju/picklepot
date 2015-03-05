@@ -125,7 +125,7 @@ public class Readers {
     public ArrayColumnReader(DataInput input, Class clazz) throws PicklePotException {
       this.lengthReader = new IntColumnReader(input);
       this.compClazz = clazz.getComponentType();
-      switch (Type.get(compClazz)) {
+      switch (Type.typeOf(compClazz)) {
         case STRING:
           compReader = new StringColumnReader(input);
           break;
