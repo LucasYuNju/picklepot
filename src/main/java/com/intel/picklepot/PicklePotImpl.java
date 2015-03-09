@@ -30,9 +30,13 @@ public class PicklePotImpl<T> implements PicklePot<T>{
   public PicklePotImpl(InputStream is) throws PicklePotException {
     input = new SimpleDataInput(is);
     fieldGroup = input.readFieldGroup();
-    fieldGroup.setPicklePot(this);
-    fieldGroup.updateOffset();
-    count = fieldGroup.getNumVals();
+    if (fieldGroup == null) {
+      count = 0;
+    } else {
+      fieldGroup.setPicklePot(this);
+      fieldGroup.updateOffset();
+      count = fieldGroup.getNumVals();
+    }
   }
 
   @Override
@@ -64,13 +68,12 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
   @Override
   public void flush() throws PicklePotException {
-    if (fieldGroup == null) {
-      fieldGroup = new FieldGroup(0);
+    if (count != 0) {
+      fieldGroup.setNumvals(count);
+      output.writeFieldGroup(fieldGroup);
+      fieldGroup.flush();
+      output.flush();
     }
-    fieldGroup.setNumvals(count);
-    output.writeFieldGroup(fieldGroup);
-    fieldGroup.flush();
-    output.flush();
   }
 
   @Override

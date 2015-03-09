@@ -27,8 +27,21 @@ import java.io.ByteArrayOutputStream;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class PicklePotTest {
+  @Test
+  public void testNull() throws PicklePotException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    PicklePot<Integer> picklePot = new PicklePotImpl<Integer>(baos, null);
+    picklePot.flush();
+    picklePot.close();
+
+    PicklePot<Integer> picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    assertFalse(picklepot.hasNext());
+  }
+
   @Test
   public void testInt() throws PicklePotException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();

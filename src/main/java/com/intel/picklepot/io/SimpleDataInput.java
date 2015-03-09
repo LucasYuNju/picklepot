@@ -34,6 +34,9 @@ public class SimpleDataInput implements DataInput {
   @Override
   public FieldGroup readFieldGroup() throws PicklePotException {
     try {
+      if (in.available() == 0) {
+        return null;
+      }
       return (FieldGroup) in.readObject();
     } catch (IOException e) {
       throw new PicklePotException(e);
