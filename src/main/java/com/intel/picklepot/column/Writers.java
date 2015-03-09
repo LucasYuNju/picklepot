@@ -6,6 +6,7 @@ import com.intel.picklepot.serialization.Type;
 import parquet.column.values.delta.DeltaBinaryPackingValuesWriter;
 import parquet.column.values.deltastrings.DeltaByteArrayWriter;
 import parquet.column.values.dictionary.DictionaryValuesWriter;
+import parquet.column.values.plain.BooleanPlainValuesWriter;
 import parquet.column.values.plain.PlainValuesWriter;
 import parquet.io.api.Binary;
 
@@ -37,6 +38,21 @@ public class Writers {
       valuesWriter.writeLong((Long) value);
     }
   }
+
+  public static class BooleanColumnWriter extends ColumnWriter {
+    public BooleanColumnWriter(DataOutput output) {
+      super(output);
+      this.valuesWriter = new BooleanPlainValuesWriter();
+    }
+
+    @Override
+    public void write(Object value) throws PicklePotException {
+      numValues++;
+      valuesWriter.writeBoolean((Boolean) value);
+      statistics.add(value);
+    }
+  }
+
 
   public static class FloatColumnWriter extends ColumnWriter {
 

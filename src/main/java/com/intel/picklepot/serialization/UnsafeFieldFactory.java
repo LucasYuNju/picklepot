@@ -16,6 +16,8 @@ public class UnsafeFieldFactory {
         return new UnsafeStringField(clazz, offset);
       case LONG:
         return new UnsafeLongField(clazz, offset);
+      case BOOLEAN:
+        return new UnsafeBooleanField(clazz, offset);
       case FLOAT:
         return new UnsafeFloatField(clazz, offset);
       case DOUBLE:
