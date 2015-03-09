@@ -18,7 +18,9 @@
 package com.intel.picklepot;
 
 import com.intel.picklepot.exception.PicklePotException;
+import org.apache.hadoop.io.BytesWritable;
 import org.junit.Test;
+import scala.Tuple2;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -171,5 +173,102 @@ public class PicklePotTest {
 
     String[] expects = { "hello", "helloworld", "world" };
     assertArrayEquals(expects, results);
+  }
+
+  @Test
+  public void testArray() throws PicklePotException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    PicklePot<byte[]> picklePot = new PicklePotImpl<byte[]>(baos, null);
+
+    picklePot.write("hello".getBytes());
+
+    picklePot.flush();
+    picklePot.close();
+
+    PicklePot<byte[]> picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    byte[] result = picklepot.read();
+
+    byte[] expects = { 'h', 'e', 'l', 'l', 'o' };
+    assertArrayEquals(expects, result);
+  }
+
+  @Test
+  public void testTurple1() throws PicklePotException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    PicklePot<Tuple2<Integer, String>> picklePot = new PicklePotImpl<Tuple2<Integer, String>>(baos, null);
+
+    picklePot.write(new Tuple2<Integer, String>(1, "intel"));
+
+    picklePot.flush();
+    picklePot.close();
+
+    PicklePot<Tuple2<Integer, String>> picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    Tuple2<Integer, String> result = picklepot.read();
+
+    assertEquals(1, result._1().intValue());
+    assertEquals("intel", result._2());
+  }
+
+  @Test
+  public void testTurple2() throws PicklePotException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    class HiveKey extends BytesWritable {
+      private static final int LENGTH_BYTES = 4;
+
+      public int hashCode;
+      private boolean hashCodeValid;
+
+      private transient int distKeyLength;
+
+      public HiveKey() {
+        hashCodeValid = false;
+      }
+
+      public HiveKey(byte[] bytes, int hashcode) {
+        super(bytes);
+        hashCode = hashcode;
+        hashCodeValid = true;
+      }
+
+      public void setHashCode(int myHashCode) {
+        hashCodeValid = true;
+        hashCode = myHashCode;
+      }
+
+      @Override
+      public int hashCode() {
+        if (!hashCodeValid) {
+          throw new RuntimeException("Cannot get hashCode() from deserialized "
+            + HiveKey.class);
+        }
+        return hashCode;
+      }
+
+      public void setDistKeyLength(int distKeyLength) {
+        this.distKeyLength = distKeyLength;
+      }
+
+      public int getDistKeyLength() {
+        return distKeyLength;
+      }
+    }
+
+    PicklePot<Tuple2<HiveKey, String>> picklePot = new PicklePotImpl<Tuple2<HiveKey, String>>(baos, null);
+
+    HiveKey hiveKey = new HiveKey("hello".getBytes(), 1);
+    picklePot.write(new Tuple2<HiveKey, String>(hiveKey, "intel"));
+
+    picklePot.flush();
+    picklePot.close();
+
+    PicklePot<Tuple2<HiveKey, String>> picklepot = new PicklePotImpl(new ByteArrayInputStream(baos.toByteArray()));
+    Tuple2<HiveKey, String> result = picklepot.read();
+
+    assertArrayEquals("hello".getBytes(), result._1().getBytes());
+    assertEquals(1, result._1().hashCode());
+    assertEquals("intel", result._2());
   }
 }

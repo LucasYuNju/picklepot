@@ -64,6 +64,9 @@ public class PicklePotImpl<T> implements PicklePot<T>{
 
   @Override
   public void flush() throws PicklePotException {
+    if (fieldGroup == null) {
+      fieldGroup = new FieldGroup(0);
+    }
     fieldGroup.setNumvals(count);
     output.writeFieldGroup(fieldGroup);
     fieldGroup.flush();
