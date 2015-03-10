@@ -41,6 +41,20 @@ public class Readers {
     }
   }
 
+  public static class BooleanColumnReader extends ColumnReader {
+    public BooleanColumnReader(DataInput input) throws PicklePotException {
+      super(input, Type.BOOLEAN);
+    }
+
+    @Override
+    public Object read() {
+      if(!hasNext()) {
+        return null;
+      }
+      return valuesReader.readBoolean();
+    }
+  }
+
   public static class FloatColumnReader extends ColumnReader {
     public FloatColumnReader(DataInput input) throws PicklePotException {
       super(input, Type.FLOAT);

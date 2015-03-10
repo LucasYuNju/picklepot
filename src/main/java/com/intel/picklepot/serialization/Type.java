@@ -14,6 +14,8 @@ public enum Type {
 
   STRING(PrimitiveType.PrimitiveTypeName.BINARY),
 
+  BOOLEAN(PrimitiveType.PrimitiveTypeName.BOOLEAN),
+
   /**
    * [[ is not supported
    */
@@ -55,6 +57,9 @@ public enum Type {
     }
     if(clazz == double.class || clazz == Double.class) {
       return DOUBLE;
+    }
+    if (clazz == boolean.class || clazz == Boolean.class) {
+      return BOOLEAN;
     }
     if(clazz.isArray()) {
       Type componentType = typeOf(clazz.getComponentType());
