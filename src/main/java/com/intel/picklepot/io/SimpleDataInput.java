@@ -4,6 +4,7 @@ import com.intel.picklepot.exception.PicklePotException;
 import com.intel.picklepot.format.Block;
 import com.intel.picklepot.serialization.FieldGroup;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -34,10 +35,9 @@ public class SimpleDataInput implements DataInput {
   @Override
   public FieldGroup readFieldGroup() throws PicklePotException {
     try {
-      if (in.available() == 0) {
-        return null;
-      }
       return (FieldGroup) in.readObject();
+    } catch (EOFException e) {
+      return null;
     } catch (IOException e) {
       throw new PicklePotException(e);
     } catch (ClassNotFoundException e) {
