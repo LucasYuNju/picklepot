@@ -10,7 +10,8 @@ public class SimpleTest<T> implements Serializable{
   float f;
   double d;
   String s;
-  Integer[] a;
+  Pair[] a;
+  double[] da;
   T t;
 
   public void init(int val, T t) {
@@ -18,22 +19,9 @@ public class SimpleTest<T> implements Serializable{
     f = val + 0.1f;
     d = f;
     s = "a" + val;
-    a = new Integer[]{val, val};
+    a = new Pair[]{new Pair("a", 123), new Pair("b", 456)};
+    da = new double[] {1.0, 2.0, 3.0};
     this.t = t;
-  }
-
-  public void toFile() throws Exception {
-
-    for(int i=0; i<100000; i++) {
-      PicklePot picklepot = new PicklePotImpl(new FileInputStream("serialized"));
-      synchronized (this) {
-        while (picklepot.hasNext()) {
-          Object restored = picklepot.read();
-          System.out.println(restored);
-          wait(10);
-        }
-      }
-    }
   }
 
   public void testPiclePot() throws Exception {
@@ -41,7 +29,7 @@ public class SimpleTest<T> implements Serializable{
 
     PicklePot<Object> picklePot = new PicklePotImpl<Object>(baos, null);
 
-    for(int i=0; i<100000; i++) {
+    for(int i=0; i<10; i++) {
       SimpleTest<Object> obj = new SimpleTest<Object>();
       obj.init(1, new Pair("a", 123));
       picklePot.write(obj);
@@ -65,7 +53,6 @@ public class SimpleTest<T> implements Serializable{
     synchronized (this) {
       for (int i = 0; i < 10000; i++) {
         testPiclePot();
-        toFile();
         wait(10);
       }
     }

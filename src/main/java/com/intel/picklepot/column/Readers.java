@@ -132,6 +132,15 @@ public class Readers {
         case INT:
           compReader = new IntColumnReader(input);
           break;
+        case LONG:
+          compReader = new LongColumnReader(input);
+          break;
+        case FLOAT:
+          compReader = new FloatColumnReader(input);
+          break;
+        case DOUBLE:
+          compReader = new DoubleColumnReader(input);
+          break;
         default:
           throw new IllegalArgumentException();
       }
@@ -140,9 +149,9 @@ public class Readers {
     @Override
     public Object read() {
       Integer len = (Integer) lengthReader.read();
-      Object[] ret = (Object[]) Array.newInstance(compClazz, len);
+      Object ret = Array.newInstance(compClazz, len);
       for(int i=0; i<len; i++) {
-        ret[i] = compReader.read();
+        Array.set(ret, i, compReader.read());
       }
       return ret;
     }

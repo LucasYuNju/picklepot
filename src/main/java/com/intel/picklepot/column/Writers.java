@@ -9,6 +9,8 @@ import parquet.column.values.dictionary.DictionaryValuesWriter;
 import parquet.column.values.plain.PlainValuesWriter;
 import parquet.io.api.Binary;
 
+import java.lang.reflect.Array;
+
 public class Writers {
   public static class IntColumnWriter extends ColumnWriter {
     public IntColumnWriter(DataOutput output) {
@@ -116,6 +118,15 @@ public class Writers {
         case INT:
           compWriter = new IntColumnWriter(output);
           break;
+        case LONG:
+          compWriter = new LongColumnWriter(output);
+          break;
+        case FLOAT:
+          compWriter = new FloatColumnWriter(output);
+          break;
+        case DOUBLE:
+          compWriter = new DoubleColumnWriter(output);
+          break;
         default:
           throw new IllegalArgumentException();
       }
@@ -123,10 +134,10 @@ public class Writers {
 
     @Override
     public void write(Object value) throws PicklePotException {
-      Object[] array = (Object[]) value;
-      lengthWriter.write(array.length);
-      for (Object component : array) {
-        compWriter.write(component);
+      int len = Array.getLength(value);
+      lengthWriter.write(len);
+      for(int i=0; i<len; i++) {
+        compWriter.write(Array.get(value, i));
       }
     }
 

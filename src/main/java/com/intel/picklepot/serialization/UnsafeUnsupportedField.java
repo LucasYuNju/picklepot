@@ -15,9 +15,9 @@ public class UnsafeUnsupportedField extends UnsafeField {
     if(writer == null) {
       writer = new Writers.ObjectColumnWriter(picklePot.getOutput());
     }
-    if(clazz.isPrimitive()) {
-      throw new PicklePotException("class:" + clazz.getName() + " not supported");
-    }
+//    if(clazz.isPrimitive()) {
+//      throw new PicklePotException("class:" + clazz.getName() + " not supported");
+//    }
     super.write(object);
   }
 
