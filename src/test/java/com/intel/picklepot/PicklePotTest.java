@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -171,5 +173,34 @@ public class PicklePotTest {
 
     String[] expects = { "hello", "helloworld", "world" };
     assertArrayEquals(expects, results);
+  }
+
+  @Test
+  public void testDoubleArray() throws PicklePotException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    List<Double[]> arrays = new ArrayList<Double[]>();
+    for(int len=0; len<10; len++) {
+      Double[] array = new Double[len];
+      for (int i = 0; i < len; i++) {
+        array[i] = i + 0.1d;
+      }
+      arrays.add(array);
+    }
+
+    PicklePot<Double[]> picklePot = new PicklePotImpl<Double[]>(baos, null);
+    for(Double[] array : arrays) {
+      picklePot.write(array);
+    }
+
+    picklePot.flush();
+    picklePot.close();
+
+    PicklePot<Double[]> picklepot = new PicklePotImpl<Double[]>(new ByteArrayInputStream(baos.toByteArray()));
+    int i=0;
+    while (picklepot.hasNext()) {
+      Double[] result = picklepot.read();
+      assertArrayEquals(arrays.get(i), result);
+      i++;
+    }
   }
 }
