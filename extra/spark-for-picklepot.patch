@@ -1,0 +1,157 @@
+diff --git core/pom.xml core/pom.xml
+index fb34631..8c16879 100644
+--- core/pom.xml
++++ core/pom.xml
+@@ -359,6 +359,11 @@
+       <artifactId>py4j</artifactId>
+       <version>0.8.2.1</version>
+     </dependency>
++    <dependency>
++      <groupId>com.intel</groupId>
++      <artifactId>picklepot</artifactId>
++      <version>1.0-SNAPSHOT</version>
++    </dependency>
+   </dependencies>
+   <build>
+     <outputDirectory>target/scala-${scala.binary.version}/classes</outputDirectory>
+diff --git core/src/main/scala/org/apache/spark/Partitioner.scala core/src/main/scala/org/apache/spark/Partitioner.scala
+index e53a78e..b49d5b6 100644
+--- core/src/main/scala/org/apache/spark/Partitioner.scala
++++ core/src/main/scala/org/apache/spark/Partitioner.scala
+@@ -205,7 +205,8 @@ class RangePartitioner[K : Ordering : ClassTag, V](
+ 
+   @throws(classOf[IOException])
+   private def writeObject(out: ObjectOutputStream): Unit = Utils.tryOrIOException {
+-    val sfactory = SparkEnv.get.serializer
++//    val sfactory = SparkEnv.get.serializer
++    val sfactory = new JavaSerializer(SparkEnv.get.conf);
+     sfactory match {
+       case js: JavaSerializer => out.defaultWriteObject()
+       case _ =>
+@@ -223,7 +224,8 @@ class RangePartitioner[K : Ordering : ClassTag, V](
+ 
+   @throws(classOf[IOException])
+   private def readObject(in: ObjectInputStream): Unit = Utils.tryOrIOException {
+-    val sfactory = SparkEnv.get.serializer
++//    val sfactory = SparkEnv.get.serializer
++    val sfactory = new JavaSerializer(SparkEnv.get.conf);
+     sfactory match {
+       case js: JavaSerializer => in.defaultReadObject()
+       case _ =>
+diff --git core/src/main/scala/org/apache/spark/serializer/PicklePotSerializer.scala core/src/main/scala/org/apache/spark/serializer/PicklePotSerializer.scala
+new file mode 100644
+index 0000000..1b8d871
+--- /dev/null
++++ core/src/main/scala/org/apache/spark/serializer/PicklePotSerializer.scala
+@@ -0,0 +1,111 @@
++/*
++ * Licensed to the Apache Software Foundation (ASF) under one or more
++ * contributor license agreements.  See the NOTICE file distributed with
++ * this work for additional information regarding copyright ownership.
++ * The ASF licenses this file to You under the Apache License, Version 2.0
++ * (the "License"); you may not use this file except in compliance with
++ * the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package org.apache.spark.serializer
++
++import com.intel.picklepot.{PicklePot, PicklePotImpl}
++import org.apache.spark.SparkConf
++import org.apache.spark.util.ByteBufferInputStream
++
++import java.io._
++import java.nio.ByteBuffer
++
++import scala.reflect.ClassTag
++
++class PicklePotSerializer(conf: SparkConf)
++  extends Serializer {
++
++  override def newInstance():SerializerInstance = {
++    new PicklePotSerializerInstance(conf)
++  }
++}
++
++class PicklePotSerializerInstance(conf: SparkConf)
++  extends SerializerInstance {
++
++  override def serialize[T: ClassTag](t: T): ByteBuffer = {
++    val bos = new ByteArrayOutputStream()
++    val out = serializeStream(bos)
++    out.writeObject(t)
++    out.flush()
++    out.close()
++    ByteBuffer.wrap(bos.toByteArray)
++  }
++
++  override def deserialize[T: ClassTag](bytes: ByteBuffer, loader: ClassLoader): T = {
++    val bis = new ByteBufferInputStream(bytes, false)
++    val in = deserializeStream(bis)
++    in.readObject()
++  }
++
++  override def deserialize[T: ClassTag](bytes: ByteBuffer): T = {
++    val bis = new ByteBufferInputStream(bytes, false)
++    val in = deserializeStream(bis)
++    in.readObject()
++  }
++
++  override def serializeStream(s: OutputStream) = {
++    new PicklePotSerializationStream(s, conf)
++  }
++
++  override def deserializeStream(s: InputStream): DeserializationStream = {
++    new PicklePotDeserializationStream(s, conf)
++  }
++}
++
++class PicklePotSerializationStream(outStream: OutputStream, conf: SparkConf)
++  extends SerializationStream {
++  var picklePot:PicklePot[Any] = new PicklePotImpl[Any](outStream, null)
++
++  def log(t: Any) = {
++  }
++
++  override def writeObject[T: ClassTag](t: T): SerializationStream = {
++    picklePot.write(t)
++    this
++  }
++
++  override def flush() {
++//    picklePot.flush()
++  }
++
++  override def close() = {
++    picklePot.flush()
++    picklePot.close()
++    picklePot = null
++  }
++}
++
++class PicklePotDeserializationStream(in: InputStream, conf: SparkConf)
++  extends DeserializationStream {
++  var picklePot = new PicklePotImpl(in)
++
++  override def readObject[T: ClassTag](): T = {
++    if(picklePot.hasNext) {
++      val obj:Any = picklePot.read()
++      obj.asInstanceOf[T]
++    }
++    else {
++      throw new EOFException      
++    }
++  }
++
++  override def close() = {
++    picklePot.close()
++    picklePot = null
++  }
++}
