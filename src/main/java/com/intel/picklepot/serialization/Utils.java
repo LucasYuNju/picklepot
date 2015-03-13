@@ -43,7 +43,8 @@ public class Utils {
       throws IOException, ClassNotFoundException
   {
     try {
-      return Class.forName(className, false, sun.misc.VM.latestUserDefinedLoader());
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      return Class.forName(className, false, classLoader);
     } catch (ClassNotFoundException ex) {
       Class<?> cl = primClasses.get(className);
       if (cl != null) {

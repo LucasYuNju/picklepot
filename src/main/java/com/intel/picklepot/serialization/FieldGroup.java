@@ -7,6 +7,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
 public class FieldGroup implements Serializable {
   private transient Object ret;
   private transient Class clazz;
-  private UnsafeField[] unsafeFields;
+  private List<UnsafeField> unsafeFields;
   //record how many objs has been serialized
   private long numVals;
 
@@ -24,30 +25,45 @@ public class FieldGroup implements Serializable {
    * Field offset varies on different JVM, it's necessary to update offset after FieldGroup is deserialized
    */
   public void updateOffset() throws PicklePotException {
-    if(Type.typeOf(clazz) == Type.NESTED) {
+    Iterator<UnsafeField> fieldIterator = unsafeFields.iterator();
+    updateNestedOffset(clazz, fieldIterator);
+  }
+
+  private void updateNestedOffset(Class clazz, Iterator<UnsafeField> fieldIterator) throws PicklePotException {
+    if (Type.typeOf(clazz) == Type.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
-      int i = 0;
+
       for (Field field : fields) {
-        if (Modifier.isStatic(field.getModifiers()))
+        if (Modifier.isStatic(field.getModifiers())) {
           continue;
+        }
         long offset = Utils.unsafe().objectFieldOffset(field);
-        unsafeFields[i++].updateOffset(offset);
+        fieldIterator.next().updateOffset(offset);
       }
-    }
-    else {
+
+      if (clazz.getSuperclass() != null) {
+        updateNestedOffset(clazz.getSuperclass(), fieldIterator);
+      }
+    } else {
       try {
         Field retField = FieldGroup.class.getDeclaredField("ret");
         long offset = Utils.unsafe().objectFieldOffset(retField);
-        unsafeFields[0].updateOffset(offset);
+        unsafeFields.get(0).updateOffset(offset);
       } catch (NoSuchFieldException e) {
         throw new PicklePotException(e);
       }
     }
+
   }
 
   public FieldGroup(Object object) {
+    unsafeFields = new ArrayList<UnsafeField>();
     this.clazz = object.getClass();
-    if(Type.typeOf(clazz) == Type.NESTED) {
+    addFields(this.clazz, object);
+  }
+
+  private void addFields(Class clazz, Object object) {
+    if (Type.typeOf(clazz) == Type.NESTED) {
       Field[] fields = clazz.getDeclaredFields();
       List<UnsafeField> unsafeFieldList = new ArrayList<UnsafeField>();
       for (Field field : fields) {
@@ -68,16 +84,18 @@ public class FieldGroup implements Serializable {
         Class fieldClass = field.getType() == Object.class ? fieldObj.getClass() : field.getType();
         unsafeFieldList.add(UnsafeFieldFactory.getUnsafeField(fieldClass, fieldObj, offset));
       }
-      unsafeFields = new UnsafeField[unsafeFieldList.size()];
-      for(int i=0; i<unsafeFields.length; i++) {
-        unsafeFields[i] = unsafeFieldList.get(i);
+      unsafeFields.addAll(unsafeFieldList);
+
+      Class superclass = clazz.getSuperclass();
+      if (superclass != null) {
+        addFields(superclass, object);
       }
-    }
-    else {
+    } else {
       try {
         Field retField = FieldGroup.class.getDeclaredField("ret");
         long offset = Utils.unsafe().objectFieldOffset(retField);
-        unsafeFields = new UnsafeField[] {UnsafeFieldFactory.getUnsafeField(object.getClass(), object, offset)};
+        UnsafeField unsafeField = UnsafeFieldFactory.getUnsafeField(object.getClass(), object, offset);
+        unsafeFields.add(unsafeField);
       } catch (NoSuchFieldException e) {
         e.printStackTrace();
       }
@@ -85,30 +103,29 @@ public class FieldGroup implements Serializable {
   }
 
   public void write(Object object) throws PicklePotException {
-    if(isNested()) {
+    if (isNested()) {
       for (UnsafeField field : unsafeFields) {
         field.write(object);
       }
-    }
-    else {
+    } else {
       ret = object;
-      unsafeFields[0].write(this);
+      unsafeFields.get(0).write(this);
     }
   }
 
-  public void read(Object object) throws PicklePotException{
-    for(UnsafeField field : unsafeFields) {
+  public void read(Object object) throws PicklePotException {
+    for (UnsafeField field : unsafeFields) {
       field.read(object);
     }
   }
 
-  public Object read() throws PicklePotException{
-    unsafeFields[0].read(this);
+  public Object read() throws PicklePotException {
+    unsafeFields.get(0).read(this);
     return ret;
   }
 
   public void flush() {
-    for(UnsafeField field : unsafeFields) {
+    for (UnsafeField field : unsafeFields) {
       field.flush();
     }
   }
@@ -123,10 +140,11 @@ public class FieldGroup implements Serializable {
 
   /**
    * need to be called after FieldGroup is read from ObjectInputStream.
+   *
    * @param picklePot
    */
   public void setPicklePot(PicklePotImpl picklePot) {
-    for(UnsafeField field : unsafeFields) {
+    for (UnsafeField field : unsafeFields) {
       field.setPicklePot(picklePot);
     }
   }
@@ -143,20 +161,18 @@ public class FieldGroup implements Serializable {
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append("[");
-    if(!isNested()) {
+    if (!isNested()) {
       builder.append("N*");
     }
-    for(int i=0; i<unsafeFields.length; i++) {
-      if(i != 0) {
-        builder.append(", ");
-      }
-      builder.append(unsafeFields[i].toString());
+    for (UnsafeField field : unsafeFields) {
+      builder.append("\n");
+      builder.append(field.toString());
     }
     builder.append("]");
     return builder.toString();
   }
 
-  private void writeObject(ObjectOutputStream stream) throws IOException{
+  private void writeObject(ObjectOutputStream stream) throws IOException {
     stream.defaultWriteObject();
     stream.writeObject(clazz.getName());
   }

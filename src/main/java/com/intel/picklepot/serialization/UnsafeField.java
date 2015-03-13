@@ -52,7 +52,7 @@ public abstract class UnsafeField implements Serializable{
 
   @Override
   public String toString() {
-    String prefix = Type.typeOf(clazz) + "_" + clazz.getName() + " ";
+    String prefix = Type.typeOf(clazz) + "_" + clazz.getName() + "_" +  offset + " ";
     if(writer != null) {
       return prefix + writer.toString();
     }
