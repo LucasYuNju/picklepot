@@ -17,13 +17,12 @@ public enum Type {
   BOOLEAN(PrimitiveType.PrimitiveTypeName.BOOLEAN),
 
   /**
-   * [[ is not supported
+   * only one-dimensional array is supported
    */
   ARRAY(null),
 
   /**
-   * 1.Primitive types excluding above types, like double
-   * 2.Array, like Int[]
+   * primitive types excluding above types, like byte
    */
   UNSUPPORTED(null),
 
